@@ -1,0 +1,57 @@
+{
+  "entries": [
+    {
+      "refCode": "4C6370CB",
+      "name": "0xc8d2be10...",
+      "points": 220213,
+      "feesGenerated": 5.83,
+      "referrerRefCode": "DA13690A"
+    },
+    {
+      "refCode": "DA13690A",
+      "name": "vitalik",
+      "points": 1654616,
+      "feesGenerated": 23.63,
+      "referrerRefCode": null
+    },
+    {
+      "refCode": "7941B6D1",
+      "name": "0x27afb53d...",
+      "points": 13103891,
+      "feesGenerated": 369.82,
+      "referrerRefCode": "DA13690A"
+    },
+    {
+      "refCode": "77600F9F",
+      "name": "satoshi",
+      "points": 900252,
+      "feesGenerated": 31.51,
+      "referrerRefCode": "7941B6D1"
+    },
+    {
+      "refCode": "5CE6274B",
+      "name": "GesJAcrUFr...",
+      "points": 249637,
+      "feesGenerated": 8.74,
+      "referrerRefCode": null
+    },
+    {
+      "refCode": "C252C59D",
+      "name": "88888",
+      "points": 2615413,
+      "feesGenerated": 591.3,
+      "referrerRefCode": "5456AF32"
+    },
+    {
+      "refCode": "5456AF32",
+      "name": "J2ftrpqLhq...",
+      "points": 10456340,
+      "feesGenerated": 874.05,
+      "referrerRefCode": "DAC3FB48"
+    }
+  ],
+  "rates": {
+    "referralPointsRate": 0.1,
+    "referralFeesRate": 0.2
+  }
+}

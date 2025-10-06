@@ -1,0 +1,13 @@
+{
+  "rates": { "referralPointsRate": 0.10, "referralFeesRate": 0.20 },
+  "entries": [
+    { "refCode": "YOU",   "name": "You",    "points": 1000, "feesGenerated": 1250, "referrerRefCode": null },
+    { "refCode": "REF1",  "name": "Alice",  "points":  950, "feesGenerated":  300, "referrerRefCode": "YOU" },
+    { "refCode": "REF2",  "name": "Bob",    "points": 1500, "feesGenerated":  500, "referrerRefCode": "YOU" },
+
+    { "refCode": "OTHER", "name": "Charlie","points":  200, "feesGenerated":    0, "referrerRefCode": null },
+    { "refCode": "R3",    "name": "Daisy",  "points":  700, "feesGenerated":  120, "referrerRefCode": "OTHER" },
+    { "refCode": "R4",    "name": "Eve",    "points":  300, "feesGenerated":   80, "referrerRefCode": "OTHER" }
+  ]
+}
+

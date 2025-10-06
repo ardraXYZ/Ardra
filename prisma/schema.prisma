@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String    @id @default(cuid())
+  name             String?
+  email            String?   @unique
+  emailVerified    DateTime?
+  image            String?
+  username         String?   @unique
+  canEditUsername  Boolean   @default(false)
+  refCode          String    @unique
+  accounts         Account[]
+  sessions         Session[]
+  wallets          Wallet[]
+  loginLogs        LoginLog[]
+  profileWallets   Json?
+  referralsGiven   Referral[] @relation("ReferrerRelation")
+  referralsReceived Referral[] @relation("ReferredRelation")
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+enum ChainKind {
+  EVM
+  SOLANA
+}
+
+model Wallet {
+  id        String    @id @default(cuid())
+  userId    String
+  chain     ChainKind
+  address   String    @unique
+  provider  String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Referral {
+  id          String   @id @default(cuid())
+  referrerId  String
+  referredId  String   @unique
+  createdAt   DateTime @default(now())
+
+  referrer User @relation("ReferrerRelation", fields: [referrerId], references: [id], onDelete: Cascade)
+  referred User @relation("ReferredRelation", fields: [referredId], references: [id], onDelete: Cascade)
+}
+
+model LoginLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  method     String
+  ip         String?
+  userAgent  String?
+  success    Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
+
+model SiweNonce {
+  id        String   @id @default(cuid())
+  value     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  ip        String?
+  userAgent String?
+  createdAt DateTime @default(now())
+}

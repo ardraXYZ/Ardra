@@ -1,0 +1,34 @@
+[
+  {
+    "id": "ea87f117-8306-45ff-a27d-7ac3e8e82966",
+    "name": "Voltage",
+    "slug": "voltage",
+    "refCode": "4A13D1A8",
+    "referrals": [],
+    "wallets": {
+      "aster": ""
+    },
+    "points": 0,
+    "referralPoints": 0,
+    "feesGenerated": 0,
+    "referralFees": 0,
+    "createdAt": "2025-09-29T03:04:02.838Z",
+    "updatedAt": "2025-09-29T03:04:02.838Z"
+  },
+  {
+    "id": "2bd12208-32c6-4d2a-a69f-64b562d26e59",
+    "name": "Jag",
+    "slug": "jag",
+    "refCode": "A6EAC3E7",
+    "referrals": [],
+    "wallets": {
+      "aster": ""
+    },
+    "points": 0,
+    "referralPoints": 0,
+    "feesGenerated": 0,
+    "referralFees": 0,
+    "createdAt": "2025-09-29T03:04:52.138Z",
+    "updatedAt": "2025-09-29T03:04:52.138Z"
+  }
+]

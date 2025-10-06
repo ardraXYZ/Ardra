@@ -1,0 +1,8 @@
+refCode,name,points,feesGenerated,referrerRefCode
+YOU,You,1000,1250,
+REF1,Alice,950,300,YOU
+REF2,Bob,1500,500,YOU
+OTHER,Charlie,200,0,
+R3,Daisy,700,120,OTHER
+R4,Eve,300,80,OTHER
+
