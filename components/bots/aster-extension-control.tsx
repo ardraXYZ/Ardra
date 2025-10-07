@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Download, Puzzle, ShieldCheck, Timer, Plug, RefreshCcw, Settings } from "lucide-react"
 
 const resources = [
-  { title: "Download extension", description: "Load zip in Chrome (Developer Mode -> Load unpacked).", href: "/ardra-aster-bridge.zip", icon: Download, label: "Download .zip", primary: true },
+  { title: "Download extension", description: "Load zip in Chrome (Developer Mode -> Load unpacked).", href: "https://github.com/ardraXYZ/extension.git", icon: Download, label: "Download .zip", primary: true },
   { title: "Installation guide", description: "Step-by-step setup instructions.", href: "/extension/README.txt", icon: Puzzle, label: "Open guide" },
   { title: "Keepalive tab", description: "Optional ultra-light page to preserve the bridge.", href: "/bots/keepalive", icon: Plug, label: "Open keepalive" },
 ]

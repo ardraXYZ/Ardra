@@ -335,7 +335,7 @@ export default async function BotPage({ params }: BotPageProps) {
           <p className="text-sm text-white/70">Download the extension, configure your parameters in the popup, and let Chrome do the work for you.</p>
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Button asChild size="lg" className="h-12 px-6 bg-cyan-500 text-black hover:bg-cyan-400">
-              <Link href="/ardra-aster-bridge.zip">
+              <Link href="https://github.com/ardraXYZ/extension.git">
                 <Download className="mr-2 h-4 w-4" /> Download extension
               </Link>
             </Button>
@@ -592,7 +592,7 @@ function AsterMarketingPage() {
               </div>
               <div className="flex flex-wrap gap-3">
                 <Button asChild size="lg" className="h-12 px-6 bg-cyan-500 text-black hover:bg-cyan-400">
-                  <Link href="/ardra-aster-bridge.zip">
+                  <Link href="https://github.com/ardraXYZ/extension.git">
                     <Download className="mr-2 h-4 w-4" /> Download extension
                   </Link>
                 </Button>
@@ -682,7 +682,7 @@ function AsterMarketingPage() {
           <p className="text-sm text-white/70">Baixe a extensão, configure seus parâmetros no popup e deixe o Chrome trabalhar por você.</p>
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Button asChild size="lg" className="h-12 px-6 bg-cyan-500 text-black hover:bg-cyan-400">
-              <Link href="/ardra-aster-bridge.zip">
+              <Link href="https://github.com/ardraXYZ/extension.git">
                 <Download className="mr-2 h-4 w-4" /> Baixar extensão
               </Link>
             </Button>
