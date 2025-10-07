@@ -54,6 +54,14 @@ export function SiteFooter() {
       <div className="mx-auto flex max-w-6xl flex-col gap-2 px-6 py-8 text-sm text-white/60 sm:flex-row sm:items-center sm:justify-between">
         <span>&copy; 2025 Ardra</span>
         <div className="flex flex-wrap items-center gap-4">
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="border-white/15 bg-transparent text-white/70 transition-colors hover:border-white/30 hover:text-white"
+          >
+            <Link href="/privacypolicy">Privacy Policy</Link>
+          </Button>
           <button
             type="button"
             onClick={() => setShowEmailModal(true)}
