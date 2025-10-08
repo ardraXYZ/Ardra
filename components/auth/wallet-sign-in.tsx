@@ -110,7 +110,7 @@ export function WalletSignIn({ referralCode }: WalletSignInProps) {
   const router = useRouter()
   const { refresh } = useAuth()
   const { address: connectedEvmAddress, isConnected: evmConnected, connector: activeConnector } = useAccount()
-  const { connected: solConnected, publicKey: solPublicKey, signMessage } = useWallet()
+  const { connected: solConnected, publicKey: solPublicKey, signMessage, connect } = useWallet()
   const { setVisible: openSolanaModal } = useWalletModal()
   const { openConnectModal: openConnectModalHook } = useConnectModal()
   const { openAccountModal } = useAccountModal()
@@ -335,6 +335,7 @@ export function WalletSignIn({ referralCode }: WalletSignInProps) {
     if (!solConnected) {
       openSolanaModal(true)
       setPendingSolSign(true)
+      try { await connect() } catch {}
       return
     }
     await handleSolanaSign()
@@ -496,6 +497,8 @@ export function WalletSignIn({ referralCode }: WalletSignInProps) {
     </div>
   )
 }
+
+
 
 
 
