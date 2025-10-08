@@ -335,7 +335,6 @@ export function WalletSignIn({ referralCode }: WalletSignInProps) {
     if (!solConnected) {
       openSolanaModal(true)
       setPendingSolSign(true)
-      try { await connect() } catch {}
       return
     }
     await handleSolanaSign()
