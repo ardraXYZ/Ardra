@@ -107,7 +107,7 @@ export function Hero() {
             height={40}
           />
           <p className="text-sm text-white/50">
-            Browser-native (Chrome extension)
+            Windows desktop (Ardra Hub MSIX)
           </p>
         </div>
 
