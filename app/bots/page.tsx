@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { ArrowUpRight, Flame, Gauge, Shield, Sparkles } from "lucide-react"
 
-type BotStatus = "live" | "soon"
+type BotStatus = "live"
 
 type BotCard = {
   id: string
@@ -24,92 +24,29 @@ const bots: BotCard[] = [
   {
     id: "aster",
     name: "Aster",
-    description: "The Next-Gen Perp DEX for All Traders.",
+    description: "Telegram automation for Aster quests, rebates, and laddered order flow.",
     status: "live",
     href: "/bots/aster",
     logo: "/images/support/Aster.png",
-    tags: ["Cross-Chain", "Hidden Orders"],
-  },
-  {
-    id: "hyperliquid",
-    name: "Hyperliquid",
-    description: "The blockchain to house all finance.",
-    status: "soon",
-    href: "/bots/hyperliquid",
-    logo: "/images/support/Hyperliquid.png",
-    tags: ["Onchain L1", "Orderbook"],
-  },
-  {
-    id: "apex",
-    name: "ApeX Protocol",
-    description: "ApeX: Where Degens Become Legends.",
-    status: "soon",
-    href: "/bots/apex",
-    logo: "/images/support/Apex.png",
-    tags: ["Non-Custodial", "0 Gas"],
-  },
-  {
-    id: "pacifica",
-    name: "Pacifica",
-    description: "Cross-margin automation for tides of volatility. Referral rotation handled natively.",
-    status: "soon",
-    href: "/bots/pacifica",
-    logo: "/images/support/Pacifica.png",
-    tags: ["Referral codes", "Dual wallet"],
-  },
-  {
-    id: "paradex",
-    name: "Paradex",
-    description: "Zero Fee Perpetuals.",
-    status: "soon",
-    href: "/bots/paradex",
-    logo: "/images/support/Paradex.png",
-    tags: ["Zero Fees", "RPI Orders"],
+    tags: ["Cross-chain", "Quest ready"],
   },
   {
     id: "backpack",
     name: "Backpack",
-    description: "All-in-one crypto wallet and exchange.",
-    status: "soon",
+    description: "Regulated perps flow routed through the Ardra Telegram bot with referral tracking.",
+    status: "live",
     href: "/bots/backpack",
     logo: "/images/support/Backpack.png",
-    tags: ["Regulated Perps", "Wallet Exchange"],
+    tags: ["Regulated", "Wallet native"],
   },
   {
-    id: "avantis",
-    name: "Avantis",
-    description: "Global Markets, Limitless Leverage.",
-    status: "soon",
-    href: "/bots/avantis",
-    logo: "/images/support/Avantis.png",
-    tags: ["Zero Fees", "500x"],
-  },
-  {
-    id: "standx",
-    name: "StandX",
-    description: "Yield-Earning $DUSD Margin Trading.",
-    status: "soon",
-    href: "/bots/standx",
-    logo: "/images/support/StandX.png",
-    tags: ["DUSD Margin", "Yield Margin"],
-  },
-  {
-    id: "lighter",
-    name: "Lighter",
-    description: "Trade perpetuals with low costs and low latency.",
-    status: "soon",
-    href: "/bots/lighter",
-    logo: "/images/support/Lighter.png",
-    tags: ["ZK Verifiable", "HFT Latency"],
-  },
-  {
-    id: "outkast",
-    name: "OUTKAST (by KAST Card)",
-    description: "Earn KAST points with every trade.",
-    status: "soon",
-    href: "/bots/outkast",
-    logo: "/images/support/Hyperliquid.png",
-    tags: ["KAST Points", "by Hyperliquid"],
+    id: "pacifica",
+    name: "Pacifica",
+    description: "Cross-margin presets and referral rotation handled inside the Telegram hub.",
+    status: "live",
+    href: "/bots/pacifica",
+    logo: "/images/support/Pacifica.png",
+    tags: ["Referral hub", "Dual wallet"],
   },
 ]
 
@@ -118,20 +55,21 @@ const bots: BotCard[] = [
 const highlights = [
   {
     icon: <Sparkles className="h-4 w-4" />,
-    title: "Unified command center",
-    body: "Monitor, launch and audit every integration from one console.",
+    title: "Telegram-native",
+    body: "Run every Ardra bot straight from Telegram with no installers, licenses, or desktop setup required.",
   },
   {
     icon: <Gauge className="h-4 w-4" />,
-    title: "Latency aware",
-    body: "Configs preserved with deterministic deployment timelines.",
+    title: "Guardrails enabled",
+    body: "Beta release ships with pre-set margin, take profit, and stop loss while we finish the custom controls.",
   },
   {
     icon: <Shield className="h-4 w-4" />,
-    title: "Self-hosted",
-    body: "You own the keys. Ardra only orchestrates orchestration.",
+    title: "Multi-venue coverage",
+    body: "Aster, Pacifica, and Backpack flows are all live inside the same Telegram command center.",
   },
 ]
+
 
 export default function BotsIndexPage() {
   return (
@@ -142,23 +80,29 @@ export default function BotsIndexPage() {
           <div className="absolute inset-0 -z-10 bg-[radial-gradient(65%_80%_at_20%_0%,rgba(56,189,248,0.28),transparent),radial-gradient(75%_85%_at_80%_10%,rgba(147,51,234,0.2),transparent)]" />
           <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
             <div className="space-y-6">
-              <Badge className="w-fit border-cyan-300/30 bg-cyan-400/10 text-cyan-100">Ardra Perp Stack</Badge>
+              <Badge className="w-fit border-cyan-300/30 bg-cyan-400/10 text-cyan-100">Telegram Bot Beta</Badge>
               <div className="space-y-4">
                 <h1 className="text-4xl font-semibold text-white sm:text-5xl">
-                  Launch, monitor and upgrade every Perp DEX automation from one orbit
+                  Launch, monitor, and farm with every Ardra bot inside Telegram
                 </h1>
                 <p className="max-w-2xl text-sm leading-relaxed text-white/70">
-                  Aster is live today. The rest of the roster is staged with design blueprints, risk models and referral
-                  schemas. Link wallets once and switch venues with zero friction.
+                  Ardra Hub now operates as a free Telegram bot. Aster, Backpack, and Pacifica strategies are live with
+                  pre-defined margin, take profit, and stop loss rails while we finish the advanced configuration panel.
+                  Future updates will let you personalize every parameter without leaving Telegram.
                 </p>
               </div>
-               <div className="flex flex-wrap items-center gap-4">
-                 <Button asChild className="h-11 rounded-full bg-cyan-500 px-6 text-black hover:bg-cyan-400">
-                   <Link href="/bots/aster">
-                     Launch Aster <ArrowUpRight className="ml-2 h-4 w-4" />
-                   </Link>
-                 </Button>
-               </div>
+              <div className="flex flex-wrap items-center gap-4">
+                <Button asChild className="h-11 rounded-full bg-cyan-500 px-6 text-black hover:bg-cyan-400">
+                  <Link href="https://t.me/ArdraHubbot" target="_blank" rel="noreferrer" prefetch={false}>
+                    Open in Telegram <ArrowUpRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" className="h-11 rounded-full border-cyan-400/40 text-cyan-200">
+                  <Link href="/bots/aster">
+                    View active bots <ArrowUpRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
             </div>
             <div className="grid w-full max-w-sm gap-4 rounded-[28px] border border-white/10 bg-black/50 p-6 backdrop-blur">
               {highlights.map((item) => (
@@ -181,7 +125,7 @@ export default function BotsIndexPage() {
             <div>
               <h2 className="text-2xl font-semibold text-white">Integration roster</h2>
               <p className="text-sm text-white/60">
-                Only Aster is live today. Every other venue will surface here with the exact same control plane.
+                Aster, Pacifica, and Backpack already run in the Telegram beta. Parameter overrides are coming in the next release.
               </p>
             </div>
             <Badge className="border-purple-300/40 bg-purple-500/10 text-purple-100">Staged rollouts</Badge>
