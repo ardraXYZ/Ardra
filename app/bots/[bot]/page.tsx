@@ -572,20 +572,16 @@ function AsterMarketingPage() {
 
   const faqs = [
     {
-      question: "Preciso instalar alguma coisa?",
-<<<<<<< HEAD
-      answer: "No. ArdraHubbot runs inside Telegram on any device.",
-=======
-      answer: "Nao. O ArdraHubbot roda direto no Telegram, em qualquer dispositivo.",
->>>>>>> c36fc78f6fc53331dedfb4a2751e20b2b722f5dc
+      question: "Do I need to install anything?",
+      answer: "No. ArdraHubbot runs entirely inside Telegram on any device.",
     },
     {
-      question: "Posso mudar margem, take profit ou stop loss?",
-      answer: "Ainda nao. Esses parametros estao travados durante o beta para manter a seguranca.",
+      question: "Can I change margin, take profit, or stop loss?",
+      answer: "Not yet. Those parameters stay locked during the beta to keep flows safe.",
     },
     {
-      question: "Quais venues estao disponiveis?",
-      answer: "Aster, Backpack e Pacifica ja funcionam dentro do mesmo chat do Telegram.",
+      question: "Which venues are available?",
+      answer: "Aster, Backpack, and Pacifica already run inside the same Telegram chat.",
     },
   ]
 
