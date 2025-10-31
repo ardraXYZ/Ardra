@@ -99,7 +99,7 @@ export default function BotsIndexPage() {
                 </Button>
                 <Button asChild variant="outline" className="h-11 rounded-full border-cyan-400/40 text-cyan-200">
                   <Link href="/bots/aster">
-                    View active bots <ArrowUpRight className="ml-2 h-4 w-4" />
+                    View bots <ArrowUpRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
               </div>

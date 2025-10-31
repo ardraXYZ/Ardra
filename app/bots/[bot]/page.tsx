@@ -384,7 +384,7 @@ export default async function BotPage({ params }: BotPageProps) {
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="h-12 px-6 border-white/30 text-white hover:bg-white/10">
-              <Link href="/bots">View active bots</Link>
+              <Link href="/bots">View bots</Link>
             </Button>
           </div>
         </div>
@@ -573,7 +573,11 @@ function AsterMarketingPage() {
   const faqs = [
     {
       question: "Preciso instalar alguma coisa?",
+<<<<<<< HEAD
       answer: "No. ArdraHubbot runs inside Telegram on any device.",
+=======
+      answer: "Nao. O ArdraHubbot roda direto no Telegram, em qualquer dispositivo.",
+>>>>>>> c36fc78f6fc53331dedfb4a2751e20b2b722f5dc
     },
     {
       question: "Posso mudar margem, take profit ou stop loss?",
@@ -668,7 +672,7 @@ function AsterMarketingPage() {
         <div className="mx-auto max-w-6xl px-6">
           <h2 className="text-3xl font-semibold text-white">How it works</h2>
           <p className="mt-2 max-w-2xl text-sm text-white/60 hidden">
-            Tres passos para rodar o modulo da Aster pelo ArdraHubbot no Telegram.
+            Three steps to run the Aster module via ArdraHubbot on Telegram.
           </p>
           <p className="mt-2 max-w-2xl text-sm text-white/60">
             Three steps to run the Aster module through ArdraHubbot on Telegram - no desktop required.
@@ -715,17 +719,17 @@ function AsterMarketingPage() {
 
       <section className="border-t border-white/10 bg-black py-16 hidden">
         <div className="mx-auto max-w-4xl px-6 text-center space-y-6">
-          <h2 className="text-3xl font-semibold text-white">Pronto para rodar a Aster no Telegram?</h2>
-          <p className="text-sm text-white/70">Abra o ArdraHubbot, conecte as credenciais e monitore tudo direto do chat.</p>
+          <h2 className="text-3xl font-semibold text-white">Ready to run Aster on Telegram?</h2>
+          <p className="text-sm text-white/70">Open ArdraHubbot, link your credentials, and monitor everything directly from chat.</p>
           <div className="flex flex-wrap items-center justify-center gap-3">
-                <Button asChild size="lg" className="h-12 px-6 bg-cyan-500 text-black hover:bg-cyan-400">
-                  <Link href={TELEGRAM_BOT_URL} target="_blank" rel="noopener noreferrer">
-                    <Send className="mr-2 h-4 w-4" /> Open in Telegram
-                  </Link>
-                </Button>
-                <Button asChild size="lg" variant="outline" className="h-12 px-6 border-white/30 text-white hover-bg-white/10">
-                  <Link href="/bots">View active bots</Link>
-                </Button>
+            <Button asChild size="lg" className="h-12 px-6 bg-cyan-500 text-black hover:bg-cyan-400">
+              <Link href={TELEGRAM_BOT_URL} target="_blank" rel="noopener noreferrer">
+                <Send className="mr-2 h-4 w-4" /> Open in Telegram
+              </Link>
+            </Button>
+            <Button asChild size="lg" variant="outline" className="h-12 px-6 border-white/30 text-white hover:bg-white/10">
+              <Link href="/bots">View active bots</Link>
+            </Button>
           </div>
         </div>
       </section>
