@@ -107,7 +107,7 @@ export function Hero() {
             height={40}
           />
           <p className="text-sm text-white/50">
-            Windows desktop (Ardra Hub MSIX)
+            Runs inside Telegram (ArdraHubbot beta)
           </p>
         </div>
 

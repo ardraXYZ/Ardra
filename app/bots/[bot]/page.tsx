@@ -5,11 +5,9 @@ import { notFound } from "next/navigation"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, ShieldCheck, Zap, Clock3, Cpu, LineChart, Layers, Download } from "lucide-react"
+import { ShieldCheck, Zap, Clock3, Cpu, LineChart, Layers, Send } from "lucide-react"
 
-const HUB_REPO_URL = "https://github.com/ardraXYZ/ARDRAHUB"
-const HUB_RELEASE_URL =
-  "https://github.com/ardraXYZ/ARDRAHUB/releases/download/v1.0.0/ArdraHub_1.0.0_x64.msix"
+const TELEGRAM_BOT_URL = "https://t.me/ArdraHubbot"
 
 const botConfigs = {
   aster: createAsterConfig(),
@@ -68,62 +66,62 @@ function createAsterConfig(): BotConfig {
   return {
     name: "Aster",
     status: "live",
-    heroBadge: "Windows desktop bot",
-    title: "Aster via Ardra Hub",
+    heroBadge: "Telegram bot beta",
+    title: "Aster on Telegram",
     description:
-      "Harness Ardra Hub on Windows to run Aster automations with referral routing, rebate capture, and safety rails built in.",
+      "Trigger Aster runs directly from the ArdraHubbot conversation with margin, take-profit, and stop-loss presets guarding the beta.",
     heroImage: "/images/support/Aster.png",
     primaryCta: {
-      label: "Download Ardra Hub",
-      href: HUB_RELEASE_URL,
+      label: "Open ArdraHubbot",
+      href: TELEGRAM_BOT_URL,
       variant: "primary",
     },
     secondaryCta: {
-      label: "View source on GitHub",
-      href: HUB_REPO_URL,
+      label: "View active bots",
+      href: "/bots",
       variant: "outline",
     },
     features: [
       {
-        title: "Windows-native runner",
-        description: "Signed MSIX installer with automatic updates via the Ardra Hub release channel.",
+        title: "Command from Telegram",
+        description: "Launch, pause, and inspect runs with slash commands that work on desktop, web, or mobile.",
       },
       {
-        title: "Desktop control room",
-        description: "Monitor balances, margin usage, and execution logs from a single Windows UI.",
+        title: "Beta guardrails",
+        description: "Margin, take-profit, and stop-loss remain pre-set while we finish the custom parameter editor.",
       },
       {
-        title: "Referral-aware automation",
-        description: "Routes trades through Ardra referrals while distributing rebates back to your wallet.",
+        title: "Live execution feed",
+        description: "Receive fills, funding alerts, and status changes in real time without opening the dashboard.",
       },
       {
-        title: "Safety rails included",
-        description: "Session PIN, API key encryption, and kill-switch macros keep execution under your control.",
+        title: "Unified venues",
+        description: "Swap between Aster, Backpack, and Pacifica strategies inside one conversation.",
       },
     ],
     quickStart: [
-      "Download ArdraHub_1.0.0_x64.msix from GitHub releases.",
-      "Install on Windows (allow side-loading if SmartScreen prompts).",
-      "Open Ardra Hub, select the Aster module, and load your wallet/API keys.",
-      "Set strategy presets and referral key, then press Start Automation.",
+      "Open https://t.me/ArdraHubbot and tap Start to authenticate.",
+      "Run /link to connect your Aster wallet or API keys.",
+      "Confirm the preset guardrails and referral routing supplied in the beta.",
+      "Send /run to launch automation and monitor the live feed.",
     ],
     manualSetup: [
-      "Verify the MSIX publisher signature before installing.",
-      "Backup and encrypt Aster API keys outside the app.",
-      "Use Windows Hello or a PIN to lock the session when AFK.",
-      "Update via the in-app release channel to stay current.",
+      "Limit Aster API keys to trading and read access before linking.",
+      "Bookmark the bot in Telegram so critical alerts stay pinned.",
+      "Review available capital before issuing /run.",
+      "Use /stop to pause sessions prior to changing venue permissions.",
     ],
     safeguards: [
-      "Test with minimal capital on first runs.",
-      "Rotate API keys frequently and revoke unused credentials.",
-      "Stop automation before shutting down Windows or disconnecting power.",
-      "Review logs daily for any manual intervention cues.",
+      "Begin with reduced size on the first beta sessions.",
+      "Rotate and revoke Aster credentials regularly.",
+      "Pause the bot before moving funds between sub-accounts.",
+      "Escalate to support if telemetry stops updating for more than 2 minutes.",
     ],
     stats: [
-      { label: "Supported platform", value: "Windows 10/11" },
-      { label: "Bots bundled", value: "Aster, Backpack, Pacifica" },
-      { label: "Referral share", value: "20%-50% (KOL programs)" },
-      { label: "Release channel", value: "GitHub MSIX" },
+      { label: "Available on", value: "Telegram (web / desktop / mobile)" },
+      { label: "Active venues", value: "Aster, Backpack, Pacifica" },
+      { label: "Guardrails", value: "Margin/TP/SL fixed during beta" },
+      { label: "Customization", value: "Advanced editor coming soon" },
     ],
   }
 }
@@ -132,55 +130,56 @@ function createBackpackConfig(): BotConfig {
   return {
     name: "Backpack",
     status: "live",
-    heroBadge: "Windows desktop bot",
-    title: "Backpack via Ardra Hub",
+    heroBadge: "Telegram bot beta",
+    title: "Backpack on Telegram",
     description:
-      "Automate Backpack perps from the Ardra Hub desktop runner with compliance-friendly safeguards and referral tracking built in.",
+      "Execute regulated Backpack perps from ArdraHubbot with compliance-safe defaults and fixed guardrails while the beta matures.",
     heroImage: "/images/support/Backpack.png",
     primaryCta: {
-      label: "Download Ardra Hub",
-      href: HUB_RELEASE_URL,
+      label: "Open ArdraHubbot",
+      href: TELEGRAM_BOT_URL,
       variant: "primary",
     },
     secondaryCta: {
-      label: "View source on GitHub",
-      href: HUB_REPO_URL,
+      label: "View active bots",
+      href: "/bots",
       variant: "outline",
     },
     features: [
       {
-        title: "Regulated venue ready",
-        description: "Compliant execution with referral attribution and rebate export built into the runner.",
+        title: "Compliance aware",
+        description: "Attach referral IDs and reporting labels directly inside the Telegram workflow.",
       },
       {
-        title: "Capital presets",
-        description: "Define per-market limits, latency budgets, and kill-switch triggers per bot session.",
+        title: "Preset risk rails",
+        description: "Margin, take-profit, and stop-loss levels stay locked during beta to keep flows predictable.",
       },
       {
-        title: "Audit-friendly logs",
-        description: "Windows event history plus CSV exports for compliance and performance review.",
+        title: "Chat-native telemetry",
+        description: "Receive fills, funding notices, and session summaries without leaving Telegram.",
       },
     ],
     quickStart: [
-      "Install Ardra Hub via the MSIX release.",
-      "Open Backpack module, load API keys, and set regulatory labels if required.",
-      "Assign referral ID + rebate wallet, then start automation.",
+      "Open https://t.me/ArdraHubbot and start the conversation.",
+      "Use /link to authorise Backpack API keys with trading and read scopes.",
+      "Confirm the beta guardrails and referral wallet the bot surfaces.",
+      "Send /run to begin execution and watch the live log.",
     ],
     manualSetup: [
-      "Request trading-enabled API keys from Backpack before onboarding.",
-      "Use Windows Credential Manager or a hardware vault to store secrets.",
-      "Schedule regular CSV exports for compliance logs.",
+      "Request Backpack API keys with trading plus read permissions only.",
+      "Restrict IPs or passphrases on the keys before linking them to the bot.",
+      "Document session summaries for compliance reviews.",
     ],
     safeguards: [
-      "Revoke and rotate Backpack keys frequently.",
-      "Disable automation before editing risk parameters.",
-      "Set lower leverage defaults for new wallets.",
+      "Stop the session with /stop before editing risk or referral parameters.",
+      "Rotate Backpack API keys on a defined cadence.",
+      "Keep leverage conservative while presets are fixed.",
     ],
     stats: [
-      { label: "Supported platform", value: "Windows 10/11" },
-      { label: "Referral aware", value: "20%-50% share" },
-      { label: "Reporting", value: "CSV exports + logs" },
-      { label: "Release channel", value: "GitHub MSIX" },
+      { label: "Available on", value: "Telegram (web / desktop / mobile)" },
+      { label: "Referral tracking", value: "Built-in routing" },
+      { label: "Guardrails", value: "Margin/TP/SL fixed during beta" },
+      { label: "Reports", value: "Chat summaries + CSV export soon" },
     ],
   }
 }
@@ -189,56 +188,56 @@ function createPacificaConfig(): BotConfig {
   return {
     name: "Pacifica",
     status: "live",
-    heroBadge: "Windows desktop bot",
-    title: "Pacifica via Ardra Hub",
+    heroBadge: "Telegram bot beta",
+    title: "Pacifica on Telegram",
     description:
-      "Run Pacifica cross-margin strategies through Ardra Hub with referral routing, rebate capture, and automated rotation between quests.",
+      "Rotate Pacifica cross-margin campaigns from ArdraHubbot with pre-defined guardrails and automated referral handling.",
     heroImage: "/images/support/Pacifica.png",
     primaryCta: {
-      label: "Download Ardra Hub",
-      href: HUB_RELEASE_URL,
+      label: "Open ArdraHubbot",
+      href: TELEGRAM_BOT_URL,
       variant: "primary",
     },
     secondaryCta: {
-      label: "View source on GitHub",
-      href: HUB_REPO_URL,
+      label: "View active bots",
+      href: "/bots",
       variant: "outline",
     },
     features: [
       {
         title: "Referral rotation",
-        description: "Automatically rotate Pacifica referral links so every wallet in your tree is credited.",
+        description: "Keep every wallet in your tree credited while the bot handles rotations automatically.",
       },
       {
-        title: "Cross-margin presets",
-        description: "Ship with curated risk profiles for farming campaigns, delta-neutral, and directional plays.",
+        title: "Preset strategies",
+        description: "Beta ships with curated guardrails for farming, neutral, and directional flows.",
       },
       {
-        title: "Quest-friendly automations",
-        description: "One-click macros for daily tasks, claim reminders, and proof-of-trade snapshots.",
+        title: "Quest-friendly alerts",
+        description: "Receive quest reminders and proof-of-trade updates straight in Telegram.",
       },
     ],
     quickStart: [
-      "Install ArdraHub_1.0.0_x64.msix from GitHub releases.",
-      "Launch Ardra Hub and pick the Pacifica module.",
-      "Load wallet/API credentials, referral key, and quest profile.",
-      "Start automation and monitor progress from the desktop dashboard.",
+      "Open https://t.me/ArdraHubbot and hit Start to unlock the commands.",
+      "Use /link to connect Pacifica credentials with trading + read scopes.",
+      "Choose the campaign preset surfaced by the bot and confirm referral routing.",
+      "Send /run to activate automation and monitor the quest feed.",
     ],
     manualSetup: [
-      "Confirm your machine runs Windows 10/11 with admin rights for MSIX installs.",
-      "Store Pacifica secrets in Windows Credential Manager or a hardware vault.",
-      "Enable notifications inside Ardra Hub to receive quest reminders.",
+      "Ensure Pacifica API keys are scoped correctly before linking.",
+      "Keep quest accounts funded ahead of launching new sessions.",
+      "Enable Telegram notifications so reminders stay visible.",
     ],
     safeguards: [
-      "Pause automation before tweaking capital allocation.",
-      "Rotate referral keys only when automation is stopped.",
-      "Export logs weekly for compliance or proof-of-volume checks.",
+      "Pause with /stop before adjusting capital allocation.",
+      "Rotate referral keys only when the session is paused.",
+      "Export chat logs weekly for compliance or proof-of-volume checks.",
     ],
     stats: [
-      { label: "Supported platform", value: "Windows 10/11" },
-      { label: "Referral aware", value: "20%-50% share" },
-      { label: "Quests automated", value: "Daily + weekly" },
-      { label: "Release channel", value: "GitHub MSIX" },
+      { label: "Available on", value: "Telegram (web / desktop / mobile)" },
+      { label: "Campaign focus", value: "Quests + cross-margin" },
+      { label: "Guardrails", value: "Margin/TP/SL fixed during beta" },
+      { label: "Referral handling", value: "Automatic rotation" },
     ],
   }
 }
@@ -364,9 +363,9 @@ export default async function BotPage({ params }: BotPageProps) {
                   className="mx-auto h-48 w-48 object-contain"
                 />
                 <div className="mt-6 space-y-3 text-sm text-white/70">
-                  <p>{config.status === "live" ? "Windows desktop runner with local key custody and offline-ready automation." : "Integration is in closed beta. Opt in through your profile to get notified."}</p>
-                  <p>{config.status === "live" ? "Auditable MSIX published on GitHub Releases so you can verify every build." : "Track progress on GitHub as we finish the binaries."}</p>
-                  <p>{config.status === "live" ? "Swap between Aster, Backpack, and Pacifica modules inside Ardra Hub." : "Expect the same unified control plane you know from Aster."}</p>
+                  <p>{config.status === "live" ? "Telegram command center with safeguarded presets so you can launch runs from any device." : "Integration is in closed beta. Opt in through your profile to get notified."}</p>
+                  <p>{config.status === "live" ? "No installers required - authorise the bot in Telegram and monitor executions in real time." : "Track progress on GitHub as we finish the binaries."}</p>
+                  <p>{config.status === "live" ? "Access Aster, Backpack, and Pacifica flows inside the same ArdraHubbot conversation." : "Expect the same unified control plane you know from Aster."}</p>
                 </div>
               </div>
             </div>
@@ -376,18 +375,16 @@ export default async function BotPage({ params }: BotPageProps) {
 
       <section className="border-t border-white/10 bg-black py-16">
         <div className="mx-auto max-w-4xl px-6 text-center space-y-6">
-          <h2 className="text-3xl font-semibold text-white">Deploy Ardra Hub on Windows</h2>
-          <p className="text-sm text-white/70">Grab the signed MSIX from GitHub Releases or clone the repo to inspect every line before compiling.</p>
+          <h2 className="text-3xl font-semibold text-white">Launch Ardra Hub in Telegram</h2>
+          <p className="text-sm text-white/70">Start the ArdraHubbot conversation to farm Aster, Backpack, and Pacifica with the beta guardrails, free of installers.</p>
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Button asChild size="lg" className="h-12 px-6 bg-cyan-500 text-black hover:bg-cyan-400">
-              <Link href={HUB_RELEASE_URL} target="_blank" rel="noopener noreferrer">
-                <Download className="mr-2 h-4 w-4" /> Download Windows installer
+              <Link href={TELEGRAM_BOT_URL} target="_blank" rel="noopener noreferrer">
+                <Send className="mr-2 h-4 w-4" /> Open in Telegram
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="h-12 px-6 border-white/30 text-white hover:bg-white/10">
-              <Link href={HUB_REPO_URL} target="_blank" rel="noopener noreferrer">
-                View on GitHub <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
+              <Link href="/bots">View active bots</Link>
             </Button>
           </div>
         </div>
@@ -465,16 +462,15 @@ export default async function BotPage({ params }: BotPageProps) {
             <section className="pb-24">
               <div className="mx-auto max-w-6xl px-6 text-center">
                 <div className="rounded-3xl border border-white/10 bg-white/[0.05] px-8 py-12">
-                  <h2 className="text-3xl font-semibold text-white">Launch {config.name} from Ardra</h2>
+                  <h2 className="text-3xl font-semibold text-white">Launch {config.name} from Telegram</h2>
                   <p className="mx-auto mt-4 max-w-2xl text-white/70">
-                    Combine Ardra orchestrations with venue-native automations. Clone, configure, and monitor — everything stays
-                    in your environment.
+                    Orchestrate the run straight from ArdraHubbot with guardrails that keep margin, take-profit, and stop-loss locked during beta.
                   </p>
                   <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
                     {isLive ? (
                       <Button asChild size="lg" className="h-12 px-6 bg-cyan-500 text-black hover:bg-cyan-400">
-                        <Link href="https://github.com/0xVoltage/AsterBot" target="_blank" rel="noopener noreferrer">
-                          Open repository
+                        <Link href={TELEGRAM_BOT_URL} target="_blank" rel="noopener noreferrer">
+                          Open in Telegram
                         </Link>
                       </Button>
                     ) : (
@@ -525,86 +521,82 @@ function ChecklistCard({ title, description, items, icon }: ChecklistCardProps) 
 function AsterMarketingPage() {
   const highlights = [
     {
-      title: "Windows-native automation",
-      description: "Ardra Hub ships as a signed MSIX so you can install the bot runner directly on Windows 10/11.",
+      title: "Telegram-first automation",
+      description: "Control every Ardra bot from the same chat experience - no installers required.",
       icon: ShieldCheck,
     },
     {
-      title: "Multi-bot cockpit",
-      description: "Switch between Aster, Backpack, and Pacifica modules without reinstalling anything.",
+      title: "Guardrails activated",
+      description: "Margin, take-profit, and stop-loss remain fixed during the beta to keep flows predictable.",
       icon: Zap,
     },
     {
-      title: "Open-source transparency",
-      description: "Every release maps to the ARDRAHUB Git commits, making audits and forks straightforward.",
+      title: "Multi-venue cockpit",
+      description: "Aster, Backpack, and Pacifica share the same Telegram conversation and runbooks.",
       icon: Clock3,
     },
   ]
 
   const steps = [
     {
-      title: "Download from GitHub Releases",
-      description: "Grab ArdraHub_1.0.0_x64.msix or clone the repo to build your own installer.",
+      title: "Open ArdraHubbot",
+      description: "Start a chat at https://t.me/ArdraHubbot and press Start to authenticate.",
     },
     {
-      title: "Install on Windows 10/11",
-      description: "Approve the signed MSIX, pass SmartScreen, and lock the session with Windows Hello or a PIN.",
+      title: "Link your Aster access",
+      description: "Use /link to connect wallets or API keys - credentials stay with the venue.",
     },
     {
-      title: "Launch the Aster module",
-      description: "Add wallet/API keys, set referral routing, then press Start Automation from the desktop console.",
+      title: "Launch a run",
+      description: "Send /run to start automation and follow the live feed directly in Telegram.",
     },
   ]
 
   const benefits = [
     {
-      title: "Local key custody",
-      description: "Secrets stay encrypted via Windows DPAPI—nothing leaves your machine unless you export it.",
+      title: "Custody stays with you",
+      description: "API keys and wallets never leave your control; Telegram only orchestrates the calls.",
       icon: Cpu,
     },
     {
-      title: "Desktop telemetry",
-      description: "Session logs, quest progress, and safeguards live inside Ardra Hub with CSV exports when needed.",
+      title: "Instant telemetry",
+      description: "Funding alerts, fills, and safeguards stream into the chat in real time.",
       icon: LineChart,
     },
     {
-      title: "Controlled updates",
-      description: "MSIX packages map back to the repository so you can diff every build before installing.",
+      title: "Referral ready",
+      description: "Referral routing and rebate tracking stay enabled even while presets are locked.",
       icon: Layers,
     },
   ]
 
   const faqs = [
     {
-      question: "Preciso da extensão do Chrome?",
-      answer: "Não. Ardra Hub é um aplicativo desktop para Windows com todos os módulos integrados.",
+      question: "Preciso instalar alguma coisa?",
+      answer: "Nao. O ArdraHubbot roda direto no Telegram, em qualquer dispositivo.",
     },
     {
-      question: "Como valido o build?",
-      answer:
-        "Baixe pelo GitHub Releases, compare o hash publicado ou gere seu próprio instalador clonando o repositório ARDRAHUB.",
+      question: "Posso mudar margem, take profit ou stop loss?",
+      answer: "Ainda nao. Esses parametros estao travados durante o beta para manter a seguranca.",
     },
     {
-      question: "Minhas chaves saem da máquina?",
-      answer:
-        "Não. As credenciais ficam criptografadas com DPAPI e só são usadas localmente para assinar requisições na Aster.",
+      question: "Quais venues estao disponiveis?",
+      answer: "Aster, Backpack e Pacifica ja funcionam dentro do mesmo chat do Telegram.",
     },
   ]
 
   const englishFaqs = [
     {
-      question: "Do I still need the Chrome extension?",
-      answer: "No. Ardra Hub is a Windows desktop runner that bundles every module, including Aster.",
+      question: "Do I need Windows or desktop installers?",
+      answer: "No. Everything runs through ArdraHubbot on Telegram - mobile, desktop, or web.",
     },
     {
-      question: "How do I trust the installer?",
-      answer:
-        "Download the signed MSIX from GitHub Releases, verify the checksum, or compile your own build straight from the ARDRAHUB repo.",
+      question: "Can I change margin, take profit, or stop loss?",
+      answer: "Not yet. Those guardrails stay fixed until the configurable editor ships after beta.",
     },
     {
-      question: "Do my keys ever leave the machine?",
-      answer:
-        "No. Credentials stay encrypted via Windows DPAPI and are only used locally to sign requests to the Aster DEX.",
+      question: "Which venues are live in Telegram?",
+      answer: "Aster, Backpack, and Pacifica all operate inside the same conversation today.",
     },
   ]
 
@@ -616,37 +608,43 @@ function AsterMarketingPage() {
         <div className="mx-auto max-w-6xl px-6 py-24">
           <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
             <div className="space-y-8">
-              <Badge className="border-cyan-400/40 bg-cyan-500/10 text-cyan-200">Available now</Badge>
+              <Badge className="border-cyan-400/40 bg-cyan-500/10 text-cyan-200">Telegram bot beta</Badge>
               <div className="space-y-4">
                 <h1 className="font-orbitron text-4xl sm:text-5xl md:text-6xl tracking-tight text-glow">Ardra Aster Bot</h1>
                 <p className="text-lg text-white/70 hidden">
-                  Execute a Aster direto do desktop Windows. Ardra Hub instala via MSIX assinado, mantém as chaves locais e entrega telemetria em tempo real.
+                  Controle a Aster direto do ArdraHubbot no Telegram. Nada para instalar, e os parametros de margem/TP/SL ficam protegidos durante o beta.
                 </p>
                 <p className="text-lg text-white/70">
-                  Run Aster from a Windows desktop runner. Ardra Hub installs via a signed MSIX, keeps keys local, and gives you live automation controls.
+                  Run Aster from ArdraHubbot on Telegram. There is nothing to install, and margin, take-profit, and stop-loss stay locked while the beta hardens.
                 </p>
               </div>
               <div className="flex flex-wrap gap-3">
                 <Button asChild size="lg" className="h-12 px-6 bg-cyan-500 text-black hover:bg-cyan-400">
-                  <Link href={HUB_RELEASE_URL} target="_blank" rel="noopener noreferrer">
-                    <Download className="mr-2 h-4 w-4" /> Download Windows installer
+                  <Link href={TELEGRAM_BOT_URL} target="_blank" rel="noopener noreferrer">
+                    <Send className="mr-2 h-4 w-4" /> Open in Telegram
                   </Link>
                 </Button>
                 <Button asChild size="lg" variant="outline" className="h-12 px-6 border-white/30 text-white hover:bg-white/10">
-                  <Link href={HUB_REPO_URL} target="_blank" rel="noopener noreferrer">
-                    View source on GitHub
-                  </Link>
-                </Button>
-                <Button asChild size="lg" variant="outline" className="h-12 px-6 border-white/30 text-white hover:bg-white/10">
-                  <Link href={`${HUB_REPO_URL}#readme`} target="_blank" rel="noopener noreferrer">
-                    Installation guide
-                  </Link>
+                  <Link href="/bots">View active bots</Link>
                 </Button>
               </div>
             </div>
-            <div className="relative mx-auto flex w-full max-w-md justify-center rounded-3xl border border-white/10 bg-white/5 p-6">
-              <div className="absolute -inset-6 -z-10 rounded-[2rem] bg-gradient-to-br from-cyan-500/20 via-fuchsia-400/15 to-emerald-400/20 blur-3xl" />
-              <Image src="/images/support/Aster.png" alt="Aster bot" width={320} height={320} className="h-48 w-48 object-contain" />
+
+            <div className="relative mx-auto flex w-full max-w-sm justify-center lg:justify-end">
+              <div className="relative rounded-3xl border border-white/10 bg-white/5 p-6">
+                <Image
+                  src="/images/support/Aster.png"
+                  alt="Aster bot logotype"
+                  width={320}
+                  height={320}
+                  className="mx-auto h-48 w-48 object-contain"
+                />
+                <div className="mt-6 space-y-3 text-sm text-white/70">
+                  <p>Telegram control plane with guardrails so presets stay protected during beta.</p>
+                  <p>No installers - authenticate in chat and follow execution, funding, and safeguards in real time.</p>
+                  <p>Aster, Backpack, and Pacifica live inside the same conversation for fast context switching.</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -670,10 +668,10 @@ function AsterMarketingPage() {
         <div className="mx-auto max-w-6xl px-6">
           <h2 className="text-3xl font-semibold text-white">How it works</h2>
           <p className="mt-2 max-w-2xl text-sm text-white/60 hidden">
-            Três passos para rodar o módulo da Aster dentro do Ardra Hub no Windows — sem depender de navegador.
+            Tres passos para rodar o modulo da Aster pelo ArdraHubbot no Telegram.
           </p>
           <p className="mt-2 max-w-2xl text-sm text-white/60">
-            Three steps to run the Aster module inside Ardra Hub on Windows—no browser dependency required.
+            Three steps to run the Aster module through ArdraHubbot on Telegram - no desktop required.
           </p>
           <div className="mt-10 grid gap-6 md:grid-cols-3">
             {steps.map((step, index) => (
@@ -717,18 +715,16 @@ function AsterMarketingPage() {
 
       <section className="border-t border-white/10 bg-black py-16 hidden">
         <div className="mx-auto max-w-4xl px-6 text-center space-y-6">
-          <h2 className="text-3xl font-semibold text-white">Pronto para rodar a Aster no desktop?</h2>
-          <p className="text-sm text-white/70">Baixe o instalador Windows no GitHub, configure suas chaves na Ardra Hub e mantenha tudo local.</p>
+          <h2 className="text-3xl font-semibold text-white">Pronto para rodar a Aster no Telegram?</h2>
+          <p className="text-sm text-white/70">Abra o ArdraHubbot, conecte as credenciais e monitore tudo direto do chat.</p>
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Button asChild size="lg" className="h-12 px-6 bg-cyan-500 text-black hover:bg-cyan-400">
-              <Link href={HUB_RELEASE_URL} target="_blank" rel="noopener noreferrer">
-                <Download className="mr-2 h-4 w-4" /> Baixar instalador
+              <Link href={TELEGRAM_BOT_URL} target="_blank" rel="noopener noreferrer">
+                <Send className="mr-2 h-4 w-4" /> Abrir no Telegram
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="h-12 px-6 border-white/30 text-white hover:bg-white/10">
-              <Link href={`${HUB_REPO_URL}#readme`} target="_blank" rel="noopener noreferrer">
-                Guia de instalação <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
+              <Link href="/bots">Ver bots ativos</Link>
             </Button>
           </div>
         </div>

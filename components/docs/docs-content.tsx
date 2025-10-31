@@ -26,7 +26,7 @@ const heroHighlights = [
   {
     eyebrow: "Live today",
     title: "Aster bot",
-    description: "Smart scalping on Aster DEX with deterministic rollouts and heartbeat monitoring.",
+    description: "Smart scalping on Aster DEX now ships inside Ardra Hub, our signed Windows desktop runner.",
     glow: "from-cyan-500/50 via-cyan-400/10 to-transparent",
   },
   {
@@ -68,11 +68,11 @@ const automationLayers = [
   {
     name: "Client-side agents",
     detail:
-      "Automation runs close to the user. The extension bundle and `.aster` workspace let pilots launch bots from their own machines, keeping custody local.",
+      "Automation now lives inside Ardra Hub, a signed Windows desktop app that keeps execution on the pilot's machine while mirroring the cloud control plane.",
     bullets: [
-      "Config files saved per user under `.aster/<userId>/config.json` via the Aster manager.",
-      "Browser extension blueprints ensure deterministic execution windows and visual parity.",
-      "Anime.js-driven UI states mirror command center status changes in real time.",
+      "Config files are written per user to `%LOCALAPPDATA%/ArdraHub/<bot>/<userId>.json`, and the Windows service layer loads them directly.",
+      "MSIX packaging plus DPAPI encryption give deterministic updates and keep secrets sealed to the operator's device.",
+      "Desktop telemetry panes inside Ardra Hub mirror command-center status changes in real time.",
     ],
   },
   {
@@ -167,14 +167,19 @@ const quickStart = [
       "Share `https://www.ardra.xyz/?ref=YOURCODE`. The `ReferralCapture` provider stores the code in cookies/localStorage before sign-up.",
   },
   {
-    step: "Save bot configuration",
+    step: "Install Ardra Hub on Windows",
     detail:
-      "Open the bot card (Aster today), input API keys, and persist. The server writes `.aster/<userId>/config.json` and confirms existence via `/api/aster/status`.",
+      "Download the signed MSIX (`ArdraHub_1.0.0_x64.msix`) from GitHub Releases, verify the publisher, and install on Windows 10/11.",
+  },
+  {
+    step: "Configure bots inside Ardra Hub",
+    detail:
+      "Open the desktop app, choose the Aster/Backpack/Pacifica module, and save API keys. The workspace writes configs to `%LOCALAPPDATA%/ArdraHub` and syncs status via `/api/aster/status`.",
   },
   {
     step: "Launch and monitor",
     detail:
-      "Press start or call `/api/aster/start`. Track runtime logs, funding alerts, and volume metrics from the command center panels.",
+      "Start automation from the Windows console (or call `/api/aster/start`) and watch logs, safeguards, and funding alerts stream into Ardra Hub in real time.",
   },
   {
     step: "Review points and referrals",
