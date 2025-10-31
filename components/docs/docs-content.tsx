@@ -26,7 +26,7 @@ const heroHighlights = [
   {
     eyebrow: "Live today",
     title: "Aster bot",
-    description: "Smart scalping on Aster DEX now ships inside Ardra Hub, our signed Windows desktop runner.",
+    description: "Smart scalping on Aster DEX now ships via ArdraHubbot on Telegram—no installer, guardrails baked in.",
     glow: "from-cyan-500/50 via-cyan-400/10 to-transparent",
   },
   {
@@ -68,11 +68,11 @@ const automationLayers = [
   {
     name: "Client-side agents",
     detail:
-      "Automation now lives inside Ardra Hub, a signed Windows desktop app that keeps execution on the pilot's machine while mirroring the cloud control plane.",
+      "Automation now lives inside ArdraHubbot, our Telegram orchestrator. Pilots trigger runs from chat while guardrails enforce the beta presets.",
     bullets: [
-      "Config files are written per user to `%LOCALAPPDATA%/ArdraHub/<bot>/<userId>.json`, and the Windows service layer loads them directly.",
-      "MSIX packaging plus DPAPI encryption give deterministic updates and keep secrets sealed to the operator's device.",
-      "Desktop telemetry panes inside Ardra Hub mirror command-center status changes in real time.",
+      "Pilots authenticate with `/link` commands; credentials are ingested once and stored encrypted via Prisma before any execution flows.",
+      "Margin, take-profit, and stop-loss remain fixed server-side until the configurable editor ships after beta.",
+      "Execution, fills, and safeguard alerts stream back through Telegram messages in real time—no dashboard context switch required.",
     ],
   },
   {
@@ -167,19 +167,19 @@ const quickStart = [
       "Share `https://www.ardra.xyz/?ref=YOURCODE`. The `ReferralCapture` provider stores the code in cookies/localStorage before sign-up.",
   },
   {
-    step: "Install Ardra Hub on Windows",
+    step: "Launch ArdraHubbot on Telegram",
     detail:
-      "Download the signed MSIX (`ArdraHub_1.0.0_x64.msix`) from GitHub Releases, verify the publisher, and install on Windows 10/11.",
+      "Open https://t.me/ArdraHubbot, tap Start, and complete the SIWS handshake so the bot can execute commands for your account.",
   },
   {
-    step: "Configure bots inside Ardra Hub",
+    step: "Link bots inside Telegram",
     detail:
-      "Open the desktop app, choose the Aster/Backpack/Pacifica module, and save API keys. The workspace writes configs to `%LOCALAPPDATA%/ArdraHub` and syncs status via `/api/aster/status`.",
+      "Use `/link aster`, `/link backpack`, or `/link pacifica` to authorize wallet/API access. ArdraHubbot stores credentials encrypted via Prisma before calling venue APIs.",
   },
   {
     step: "Launch and monitor",
     detail:
-      "Start automation from the Windows console (or call `/api/aster/start`) and watch logs, safeguards, and funding alerts stream into Ardra Hub in real time.",
+      "Send `/run aster` (or the relevant command) to start automation and watch fills, funding cues, and guardrail alerts stream directly into the Telegram chat.",
   },
   {
     step: "Review points and referrals",
@@ -713,7 +713,7 @@ export function DocsContent() {
                 <AnimatedCard>
                   <h3 className="text-xl font-semibold text-white">Custody posture</h3>
                   <p className="mt-3 text-sm text-white/65">
-                    Bots never receive keys over the network. Operators input secrets locally, the server writes configs directly to disk, and processes read from that file system path. No API key is persisted in Supabase.
+                    Credentials captured through ArdraHubbot stay encrypted via Prisma before any venue call executes. Decryption happens in-memory per request, nothing is written to disk, and raw API keys never leave secured storage.
                   </p>
                 </AnimatedCard>
                 <AnimatedCard>
