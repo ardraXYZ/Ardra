@@ -95,6 +95,8 @@ const tierBreakpoints: Array<{ name: TierName; cutoff: number; label: string }> 
   { name: "Diamond", cutoff: 90, label: "Top 10%" },
 ]
 
+const DEFAULT_CAPTURE_BACKGROUND = "#020617"
+
 export function LeaderboardTable() {
   const { user } = useAuth()
   const [entries, setEntries] = useState<LeaderboardEntry[]>([])
@@ -263,12 +265,42 @@ export function LeaderboardTable() {
     }
   }, [me, participants, progressPercent, progressDotPercent])
 
-  async function handleSavePng() {
+  const resolveCaptureBackground = () => {
+    if (typeof window === "undefined") return DEFAULT_CAPTURE_BACKGROUND
+    try {
+      const bodyBg = window.getComputedStyle(document.body).backgroundColor
+      if (bodyBg && bodyBg !== "transparent" && bodyBg !== "rgba(0, 0, 0, 0)") {
+        return bodyBg
+      }
+    } catch (error) {
+      console.warn("[leaderboard] capture background detection failed", error)
+    }
+    return DEFAULT_CAPTURE_BACKGROUND
+  }
+
+  async function createCaptureBlob() {
     const target = captureRef.current || panelRef.current
-    if (!target) return
+    if (!target) return null
     try {
       const htmlToImage = await import("html-to-image")
-      const blob = await htmlToImage.toBlob(target, { pixelRatio: 2 })
+      const backgroundColor = resolveCaptureBackground()
+      return await htmlToImage.toBlob(target, {
+        pixelRatio: 2,
+        backgroundColor,
+        style: {
+          backgroundColor,
+          background: backgroundColor,
+        },
+      })
+    } catch (error) {
+      console.warn("[leaderboard] capture blob failed", error)
+      return null
+    }
+  }
+
+  async function handleSavePng() {
+    try {
+      const blob = await createCaptureBlob()
       if (!blob) return
       const url = URL.createObjectURL(blob)
       const a = document.createElement("a")
@@ -301,11 +333,7 @@ export function LeaderboardTable() {
     const newline = "\n"
 
     try {
-      const target = captureRef.current || panelRef.current
-      if (!target) throw new Error("Share target unavailable")
-
-      const htmlToImage = await import("html-to-image")
-      const blob = await htmlToImage.toBlob(target, { pixelRatio: 2 })
+      const blob = await createCaptureBlob()
       if (!blob) throw new Error("Failed to generate share image")
       const file = new File([blob], "ardra-highlight.png", { type: "image/png" })
 
