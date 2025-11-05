@@ -26,6 +26,14 @@ const orbitron = Orbitron({
 export const metadata: Metadata = {
   title: "Ardra - Airdrop Bots Hub",
   description: "Ardra is the futuristic hub for airdrop farming bots on Perp DEX.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    apple: [{ url: "/icon.png", sizes: "180x180", type: "image/png" }],
+    shortcut: "/favicon.ico",
+  },
 }
 
 export default function RootLayout({
