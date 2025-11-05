@@ -1,0 +1,154 @@
+Guia do modal "Connect a wallet on Solana to continue"
+======================================================
+
+Objetivo
+--------
+Recriar o modal de conexao de carteira Solana identico ao exibido em `https://www.ardra.xyz/login` (mesma UI/UX, com o cabecalho "Connect a wallet on Solana to continue" e lista de carteiras detectadas).
+
+1. Dependencias obrigatorias
+----------------------------
+- `@solana/wallet-adapter-react`
+- `@solana/wallet-adapter-react-ui`
+- `@solana/wallet-adapter-wallets`
+- `@solana/web3.js` (instalado automaticamente pelas dependencias acima)
+
+Instalacao (pnpm):
+```
+pnpm add @solana/wallet-adapter-react @solana/wallet-adapter-react-ui @solana/wallet-adapter-wallets
+```
+
+2. Provider Solana global
+-------------------------
+Crie `components/providers/solana-provider.tsx` (ou reaproveite se ja existir) com os adaptadores na mesma ordem do Ardra (Phantom, Solflare, Backpack, Glow etc.).
+
+```tsx
+"use client"
+
+import { PropsWithChildren, useMemo } from "react"
+import { ConnectionProvider, WalletProvider } from "@solana/wallet-adapter-react"
+import { WalletModalProvider } from "@solana/wallet-adapter-react-ui"
+import {
+  PhantomWalletAdapter,
+  SolflareWalletAdapter,
+} from "@solana/wallet-adapter-wallets"
+import * as WalletAdapters from "@solana/wallet-adapter-wallets"
+
+import "@solana/wallet-adapter-react-ui/styles.css"
+
+const RPC_ENDPOINT =
+  process.env.NEXT_PUBLIC_SOLANA_RPC ?? "https://api.mainnet-beta.solana.com"
+
+export function SolanaProvider({ children }: PropsWithChildren) {
+  const wallets = useMemo(() => {
+    const base = [new PhantomWalletAdapter(), new SolflareWalletAdapter()]
+    const maybe = (Ctor: any) => (typeof Ctor === "function" ? new Ctor() : null)
+    const Backpack = (WalletAdapters as any).BackpackWalletAdapter
+    const Glow = (WalletAdapters as any).GlowWalletAdapter
+    const MagicEden = (WalletAdapters as any).MagicEdenWalletAdapter
+    const Pontem = (WalletAdapters as any).PontemWalletAdapter
+    const Talisman = (WalletAdapters as any).TalismanWalletAdapter
+    const extras = [maybe(Glow), maybe(MagicEden), maybe(Pontem), maybe(Talisman), maybe(Backpack)]
+      .filter(Boolean)
+    return [...base, ...extras]
+  }, [])
+
+  return (
+    <ConnectionProvider endpoint={RPC_ENDPOINT}>
+      <WalletProvider wallets={wallets} autoConnect>
+        <WalletModalProvider>{children}</WalletModalProvider>
+      </WalletProvider>
+    </ConnectionProvider>
+  )
+}
+```
+
+Pontos importantes:
+- O import de `@solana/wallet-adapter-react-ui/styles.css` traz exatamente o tema escuro do print.
+- `autoConnect` garante que a carteira reconecte ao recarregar a pagina, igual ao Ardra.
+
+3. Registrar o provider no layout raiz
+--------------------------------------
+No `app/layout.tsx` envolva a arvore com `SolanaProvider` (e outros providers que ja possuir). Exemplo minimo:
+```tsx
+import type { Metadata } from "next"
+import "./globals.css"
+import { SolanaProvider } from "@/components/providers/solana-provider"
+
+export const metadata: Metadata = {
+  title: "Ardra Clone",
+  description: "Replica do modal de conexao Solana",
+}
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <body>
+        <SolanaProvider>{children}</SolanaProvider>
+      </body>
+    </html>
+  )
+}
+```
+
+4. Botao para abrir o modal
+---------------------------
+Dentro do componente de login, use `useWalletModal` para exibir o modal identico ao do Ardra. O modal em si e fornecido pelo provider, voce apenas controla quando ele aparece.
+
+```tsx
+"use client"
+
+import { useWallet } from "@solana/wallet-adapter-react"
+import { useWalletModal } from "@solana/wallet-adapter-react-ui"
+
+export function ConnectSolanaButton() {
+  const { connected } = useWallet()
+  const { setVisible } = useWalletModal()
+
+  return (
+    <button
+      type="button"
+      onClick={() => setVisible(true)}
+      className="h-11 w-full rounded-lg bg-cyan-500 text-black font-semibold hover:bg-cyan-400 transition"
+    >
+      {connected ? "Connected" : "Connect Solana wallet"}
+    </button>
+  )
+}
+```
+
+Ao clicar, o modal padrao da biblioteca abre com o titulo "Connect a wallet on Solana to continue" e a lista de carteiras detectadas (Phantom, Magic Eden, Backpack, etc.), exatamente como no Ardra.
+
+5. Garantindo a mesma lista e ordem
+-----------------------------------
+- A lista vem da propriedade `wallets` do `WalletProvider`. A ordem em que voce instancia os adaptadores define a sequencia exibida no modal.
+- Para reproduzir o print fornecido, garanta a seguinte ordem:
+  1. `PhantomWalletAdapter`
+  2. `GlowWalletAdapter`
+  3. `MagicEdenWalletAdapter`
+  4. `TalismanWalletAdapter`
+  5. `SolflareWalletAdapter`
+  6. `PontemWalletAdapter`
+  7. `BackpackWalletAdapter`
+- Adicione ou remova adaptadores conforme necessario, sempre mantendo o array na ordem desejada.
+
+6. Ajustes visuais adicionais (opcional)
+----------------------------------------
+O estilo base ja replica o modal do Ardra. Se precisar ajustes finos (bordas, opacidade), sobrescreva as variaveis CSS no seu `globals.css`:
+
+```css
+:root {
+  --wallet-adapter-modal-background: #0f1522;
+  --wallet-adapter-modal-overlay-background: rgba(0, 0, 0, 0.45);
+  --wallet-adapter-modal-button-text-color: #0f172a;
+  --wallet-adapter-modal-border-radius: 24px;
+}
+```
+
+7. Testes rapidos
+-----------------
+1. Execute `pnpm dev`.
+2. Acesse `/login` (ou a pagina onde inseriu `ConnectSolanaButton`).
+3. Clique no botao e verifique se o modal aparece com o mesmo layout, titulo e lista de wallets detectadas.
+4. Instale extensoes (Phantom, Backpack, etc.) para ver as etiquetas "Detected" iguais ao Ardra.
+
+Com esses passos o modal sera identico ao fluxo original, sem incluir logica de referral ou outros elementos extras.

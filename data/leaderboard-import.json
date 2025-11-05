@@ -5,67 +5,187 @@
       "name": "0xc8d2be10...",
       "points": 220213,
       "feesGenerated": 5.83,
-      "referrerRefCode": "DA13690A"
+      "referrerRefCode": "DA13690A",
+      "perDexPoints": 0
     },
     {
       "refCode": "DA13690A",
       "name": "vitalik",
       "points": 1654616,
       "feesGenerated": 23.63,
-      "referrerRefCode": null
+      "referrerRefCode": null,
+      "perDexPoints": 0
     },
     {
       "refCode": "7941B6D1",
       "name": "0x27afb53d...",
       "points": 13103891,
       "feesGenerated": 369.82,
-      "referrerRefCode": "DA13690A"
+      "referrerRefCode": "DA13690A",
+      "perDexPoints": 0
     },
     {
       "refCode": "77600F9F",
       "name": "satoshi",
       "points": 900252,
       "feesGenerated": 31.51,
-      "referrerRefCode": "7941B6D1"
+      "referrerRefCode": "7941B6D1",
+      "perDexPoints": 0
     },
     {
       "refCode": "5CE6274B",
       "name": "GesJAcrUFr...",
       "points": 249637,
       "feesGenerated": 8.74,
-      "referrerRefCode": null
+      "referrerRefCode": null,
+      "perDexPoints": 0
     },
     {
       "refCode": "C252C59D",
       "name": "88888",
       "points": 2615413,
       "feesGenerated": 591.3,
-      "referrerRefCode": "5456AF32"
+      "referrerRefCode": "5456AF32",
+      "perDexPoints": 0
     },
     {
       "refCode": "5456AF32",
       "name": "J2ftrpqLhq...",
       "points": 10456340,
       "feesGenerated": 874.05,
-      "referrerRefCode": "DAC3FB48"
+      "referrerRefCode": "DAC3FB48",
+      "perDexPoints": 133
     },
     {
       "refCode": "DAA18284",
       "name": "hihihi",
       "points": 265417,
       "feesGenerated": 9.54,
-      "referrerRefCode": null
+      "referrerRefCode": null,
+      "perDexPoints": 0
     },
     {
       "refCode": "41ED562C",
       "name": "AuyXkVyLkQ...",
       "points": 1565445,
       "feesGenerated": 27.56,
-      "referrerRefCode": "5CE6274B"
+      "referrerRefCode": "5CE6274B",
+      "perDexPoints": 0
+    },
+    {
+      "refCode": "0DE8D0DA",
+      "name": "AMJdF4JeU8...",
+      "points": 151546,
+      "feesGenerated": 7.58,
+      "referrerRefCode": null,
+      "perDexPoints": 20
+    },
+    {
+      "refCode": "92684886",
+      "name": "Bav9TCiYRU...",
+      "points": 312576,
+      "feesGenerated": 14.06,
+      "referrerRefCode": "0DE8D0DA",
+      "perDexPoints": 50
     }
   ],
+  "perDexEntries": {
+    "Aster": [
+      {
+        "refCode": "4C6370CB",
+        "name": "0xc8d2be10...",
+        "points": 220213,
+        "feesGenerated": 5.83,
+        "referrerRefCode": "DA13690A",
+        "perDexPoints": 0
+      },
+      {
+        "refCode": "DA13690A",
+        "name": "vitalik",
+        "points": 1654616,
+        "feesGenerated": 23.63,
+        "referrerRefCode": null,
+        "perDexPoints": 0
+      },
+      {
+        "refCode": "7941B6D1",
+        "name": "0x27afb53d...",
+        "points": 13103891,
+        "feesGenerated": 369.82,
+        "referrerRefCode": "DA13690A",
+        "perDexPoints": 0
+      },
+      {
+        "refCode": "77600F9F",
+        "name": "satoshi",
+        "points": 900252,
+        "feesGenerated": 31.51,
+        "referrerRefCode": "7941B6D1",
+        "perDexPoints": 0
+      },
+      {
+        "refCode": "5CE6274B",
+        "name": "GesJAcrUFr...",
+        "points": 249637,
+        "feesGenerated": 8.74,
+        "referrerRefCode": null,
+        "perDexPoints": 0
+      },
+      {
+        "refCode": "C252C59D",
+        "name": "88888",
+        "points": 2615413,
+        "feesGenerated": 591.3,
+        "referrerRefCode": "5456AF32",
+        "perDexPoints": 0
+      },
+      {
+        "refCode": "DAA18284",
+        "name": "hihihi",
+        "points": 265417,
+        "feesGenerated": 9.54,
+        "referrerRefCode": null,
+        "perDexPoints": 0
+      },
+      {
+        "refCode": "41ED562C",
+        "name": "AuyXkVyLkQ...",
+        "points": 1565445,
+        "feesGenerated": 27.56,
+        "referrerRefCode": "5CE6274B",
+        "perDexPoints": 0
+      }
+    ],
+    "Backpack": [
+      {
+        "refCode": "5456AF32",
+        "name": "J2ftrpqLhq...",
+        "points": 10456340,
+        "feesGenerated": 874.05,
+        "referrerRefCode": "DAC3FB48",
+        "perDexPoints": 133
+      },
+      {
+        "refCode": "0DE8D0DA",
+        "name": "AMJdF4JeU8...",
+        "points": 151546,
+        "feesGenerated": 7.58,
+        "referrerRefCode": null,
+        "perDexPoints": 20
+      },
+      {
+        "refCode": "92684886",
+        "name": "Bav9TCiYRU...",
+        "points": 312576,
+        "feesGenerated": 14.06,
+        "referrerRefCode": "0DE8D0DA",
+        "perDexPoints": 50
+      }
+    ]
+  },
   "rates": {
     "referralPointsRate": 0.1,
-    "referralFeesRate": 0.2
+    "referralFeesRate": 0.2,
+    "perDexReferralPointsRate": 0.2
   }
 }
