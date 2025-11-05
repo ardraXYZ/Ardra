@@ -8,6 +8,28 @@ export async function GET() {
     const imported = await loadImportedLeaderboard()
     if (imported) {
       const computed = computeLeaderboardFromImported(imported)
+      const perDex: Record<string, typeof computed> = {}
+      if (imported.perDexEntries && typeof imported.perDexEntries === "object") {
+        const perDexRate =
+          imported.rates?.perDexReferralPointsRate ??
+          imported.rates?.referralPointsRate ??
+          0.2
+        for (const [dex, entries] of Object.entries(imported.perDexEntries)) {
+          try {
+            const payloadForDex = {
+              ...imported,
+              rates: {
+                ...imported.rates,
+                referralPointsRate: 0,
+                perDexReferralPointsRate: perDexRate,
+              },
+            }
+            perDex[dex] = computeLeaderboardFromImported(payloadForDex, entries, { usePerDexPoints: true })
+          } catch (error) {
+            console.warn(`[leaderboard] failed to compute dex ${dex}`, error)
+          }
+        }
+      }
       const byRef = new Map(computed.map((e) => [e.refCode, e]))
 
       try {
@@ -31,7 +53,7 @@ export async function GET() {
       } catch {}
 
       computed.sort((a, b) => b.totalPoints - a.totalPoints)
-      return NextResponse.json({ leaderboard: computed })
+      return NextResponse.json({ leaderboard: computed, perDex })
     }
 
     // 2) Fallback to DB-derived minimal leaderboard (referrals only)
@@ -58,9 +80,9 @@ export async function GET() {
     })
 
     entries.sort((a, b) => b.totalPoints - a.totalPoints)
-    return NextResponse.json({ leaderboard: entries })
+    return NextResponse.json({ leaderboard: entries, perDex: {} })
   } catch (error) {
     console.error("[leaderboard]", error)
-    return NextResponse.json({ leaderboard: [] }, { status: 500 })
+    return NextResponse.json({ leaderboard: [], perDex: {} }, { status: 500 })
   }
 }

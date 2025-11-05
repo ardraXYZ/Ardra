@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 
 
@@ -20,7 +20,7 @@ import { Input } from "@/components/ui/input"
 
 import { Label } from "@/components/ui/label"
 import { ConnectButton } from "@rainbow-me/rainbowkit"
-import { useAccount } from "wagmi"
+import { useAccount, useDisconnect } from "wagmi"
 
 
 import { useWallet } from "@solana/wallet-adapter-react"
@@ -177,6 +177,20 @@ const FARMS: FarmEntry[] = [
     modes: ["evm"],
 
     referral: { type: "link", url: "https://app.hyperliquid.xyz/join/ARDRA" },
+
+  },
+
+  {
+
+    id: "hibachi",
+
+    name: "Hibachi",
+
+    status: "live",
+
+    modes: ["evm"],
+
+    referral: { type: "link", url: "https://hibachi.xyz/r/ardra" },
 
   },
 
@@ -1251,53 +1265,44 @@ function ManagedWalletSection({ farm, referral, value, conflicts, onLink, onClea
   })()
 
   const entries: Array<{ mode: ChainMode; label: string; current: string }> = []
-  if (supportsEvm) {
-    entries.push({ mode: "evm", label: "EVM wallet", current: value.evm ?? "" })
-  }
-  if (supportsSolana) {
-    entries.push({ mode: "solana", label: "Solana wallet", current: value.solana ?? "" })
-  }
+  if (supportsEvm) entries.push({ mode: "evm", label: "EVM wallet", current: value.evm ?? "" })
+  if (supportsSolana) entries.push({ mode: "solana", label: "Solana wallet", current: value.solana ?? "" })
 
   return (
     <div className="space-y-5">
       {entries.map(({ mode, label, current }) => {
         const trimmed = (current ?? "").trim()
-        const hasValue = Boolean(trimmed)
+        const hasValue = trimmed.length > 0
         const formatted = hasValue ? formatAddressForDisplay(trimmed) : "Not linked yet"
         const conflict = hasConflict(conflicts, trimmed)
-        const linkButton = !hasValue
-          ? mode === "evm"
-            ? <EvmLinkButton onLink={onLink} currentValue={trimmed} />
-            : <SolanaLinkButton onLink={onLink} currentValue={trimmed} />
-          : null
 
         return (
-          <div key={mode} className="space-y-3">
-            <div
-              className={cn(
-                "rounded-2xl border bg-black/35 p-4",
-                hasValue ? "border-white/20" : "border-white/10"
-              )}
-            >
-              <p className="text-xs uppercase tracking-[0.35em] text-white/40">{label}</p>
-              <div className="mt-2 text-sm font-mono text-white/80">{formatted}</div>
-              {conflict ? <p className="mt-2 text-xs text-red-400">This wallet is already linked to another account.</p> : null}
-            </div>
-
-            <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center sm:justify-end sm:gap-3">
-              {linkButton}
+          <div key={mode} className="space-y-4 rounded-2xl border border-white/10 bg-white/[0.02] p-5">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div className="space-y-2">
+                <p className="text-xs uppercase tracking-[0.35em] text-white/40">{label}</p>
+                <p className={cn("font-mono text-sm", hasValue ? "text-white" : "text-white/45")}>{formatted}</p>
+                {conflict ? (
+                  <p className="text-xs text-red-400">This wallet is already linked to another account.</p>
+                ) : null}
+              </div>
               {hasValue ? (
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="h-10 w-full rounded-2xl border border-white/20 bg-white/5 px-5 text-sm font-medium text-white transition hover:bg-white/10 sm:w-auto"
+                  className="h-8 rounded-full border border-white/20 bg-white/5 px-4 text-xs uppercase tracking-wide text-white transition hover:bg-white/10"
                   onClick={() => onClear(mode)}
                 >
                   Remove
                 </Button>
               ) : null}
             </div>
+            {mode === "evm" ? (
+              <EvmWalletControls currentValue={trimmed} onLink={onLink} />
+            ) : (
+              <SolanaWalletControls currentValue={trimmed} onLink={onLink} />
+            )}
           </div>
         )
       })}
@@ -1305,6 +1310,105 @@ function ManagedWalletSection({ farm, referral, value, conflicts, onLink, onClea
       {farm.status === "soon" ? (
         <p className="text-xs text-white/40">Pre-link now so we can start tracking as soon as the integration goes live.</p>
       ) : null}
+    </div>
+  )
+}
+
+type WalletControlProps = {
+  currentValue: string
+  onLink: (value: string, meta: LinkMeta) => void
+}
+
+function EvmWalletControls({ currentValue, onLink }: WalletControlProps) {
+  const { address, isConnected } = useAccount()
+  const { disconnectAsync } = useDisconnect()
+  const normalizedCurrent = useMemo(() => normalizeIdentifier(currentValue), [currentValue])
+  const normalizedConnected = useMemo(() => normalizeIdentifier(address ?? ""), [address])
+  const canLink = Boolean(normalizedConnected && normalizedConnected !== normalizedCurrent)
+
+  return (
+    <div className="space-y-3">
+      <ConnectButton.Custom>
+        {({ openConnectModal }) => (
+          <Button
+            type="button"
+            className="h-9 w-full rounded-full bg-cyan-500 px-5 text-xs font-semibold uppercase tracking-wide text-black transition hover:bg-cyan-400 sm:w-auto"
+            onClick={async () => {
+              try {
+                if (isConnected) await disconnectAsync()
+              } catch (error) {
+                console.warn("[profile][evm-disconnect]", error)
+              } finally {
+                openConnectModal?.()
+              }
+            }}
+          >
+            {isConnected ? "Switch wallet" : "Connect wallet"}
+          </Button>
+        )}
+      </ConnectButton.Custom>
+      <Button
+        type="button"
+        variant="outline"
+        className="h-9 w-full rounded-full border-white/15 bg-white/5 px-5 text-xs font-semibold uppercase tracking-wide text-white transition hover:border-cyan-400 hover:bg-cyan-400/10 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+        disabled={!canLink}
+        onClick={() => {
+          if (canLink && normalizedConnected) onLink(normalizedConnected, { mode: "evm" })
+        }}
+      >
+        Link connected wallet
+      </Button>
+      <p className="text-xs text-white/40">
+        Connected:&nbsp;
+        <span className="font-mono text-white/70">
+          {normalizedConnected ? formatAddressForDisplay(normalizedConnected) : "no wallet connected"}
+        </span>
+      </p>
+    </div>
+  )
+}
+
+function SolanaWalletControls({ currentValue, onLink }: WalletControlProps) {
+  const { publicKey, disconnect } = useWallet()
+  const { setVisible } = useWalletModal()
+  const connectedAddress = publicKey?.toBase58() ?? ""
+  const normalizedCurrent = currentValue.trim()
+  const canLink = Boolean(connectedAddress && connectedAddress !== normalizedCurrent)
+
+  return (
+    <div className="space-y-3">
+      <Button
+        type="button"
+        className="h-9 w-full rounded-full bg-purple-500 px-5 text-xs font-semibold uppercase tracking-wide text-white transition hover:bg-purple-400 sm:w-auto"
+        onClick={async () => {
+          try {
+            if (typeof disconnect === "function") await disconnect()
+          } catch (err) {
+            console.warn("[profile][solana-disconnect]", err)
+          } finally {
+            setVisible(true)
+          }
+        }}
+      >
+        {connectedAddress ? "Switch wallet" : "Connect wallet"}
+      </Button>
+      <Button
+        type="button"
+        variant="outline"
+        className="h-9 w-full rounded-full border-white/15 bg-white/5 px-5 text-xs font-semibold uppercase tracking-wide text-white transition hover:border-cyan-400 hover:bg-cyan-400/10 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+        disabled={!canLink}
+        onClick={() => {
+          if (canLink) onLink(connectedAddress, { mode: "solana" })
+        }}
+      >
+        Link connected wallet
+      </Button>
+      <p className="text-xs text-white/40">
+        Connected:&nbsp;
+        <span className="font-mono text-white/70">
+          {connectedAddress ? formatAddressForDisplay(connectedAddress) : "no wallet connected"}
+        </span>
+      </p>
     </div>
   )
 }
@@ -1716,87 +1820,99 @@ function usePacificaReferralRotation() {
 
 
 
-function EvmLinkButton({ onLink }: LinkButtonProps) {
-  const { address } = useAccount()
-  const [pendingAutoLink, setPendingAutoLink] = useState(false)
+function EvmLinkButton({ onLink, currentValue }: LinkButtonProps) {
+  const { address, isConnected } = useAccount()
+  const { disconnectAsync } = useDisconnect()
+  const normalizedCurrent = useMemo(() => normalizeIdentifier(currentValue), [currentValue])
+  const normalizedConnected = useMemo(() => normalizeIdentifier(address ?? ""), [address])
 
-  const connectedAddress = normalizeIdentifier(address ?? "")
-
-  useEffect(() => {
-    if (pendingAutoLink && connectedAddress) {
-      onLink(connectedAddress, { mode: "evm" })
-      setPendingAutoLink(false)
-    }
-  }, [pendingAutoLink, connectedAddress, onLink])
+  const linked = normalizedConnected && normalizedConnected === normalizedCurrent
 
   return (
-    <div className="w-full sm:w-auto">
-      <ConnectButton.Custom>
-        {({ openConnectModal }) => (
+    <ConnectButton.Custom>
+      {({ openConnectModal }) => (
+        <div className="flex w-full flex-col items-stretch gap-2 sm:w-auto">
           <Button
             type="button"
             className="h-10 w-full rounded-2xl bg-cyan-500 px-5 text-sm font-medium text-black transition hover:bg-cyan-400 sm:w-auto"
-            onClick={() => {
-              openConnectModal?.()
-              setPendingAutoLink(true)
+            onClick={async () => {
+              try {
+                if (isConnected) {
+                  await disconnectAsync()
+                }
+              } catch (error) {
+                console.warn("[profile][evm-disconnect]", error)
+              } finally {
+                openConnectModal?.()
+              }
             }}
           >
-            {pendingAutoLink ? "Connecting..." : "Connect EVM wallet"}
+            {isConnected ? "Switch EVM wallet" : "Connect EVM wallet"}
           </Button>
-        )}
-      </ConnectButton.Custom>
-    </div>
+          {normalizedConnected ? (
+            <>
+              <p className="text-xs text-white/50">
+                Connected wallet: <span className="font-mono text-white">{normalizedConnected}</span>
+              </p>
+              <Button
+                type="button"
+                variant="outline"
+                className="h-8 w-full rounded-full border-white/20 text-xs uppercase tracking-wide text-white transition hover:border-cyan-400 hover:bg-cyan-400/10 sm:w-auto"
+                disabled={linked}
+                onClick={() => onLink(normalizedConnected, { mode: "evm" })}
+              >
+                {linked ? "Linked" : "Link this wallet"}
+              </Button>
+            </>
+          ) : null}
+        </div>
+      )}
+    </ConnectButton.Custom>
   )
 }
 
-
-
-
-function SolanaLinkButton({ onLink }: LinkButtonProps) {
-  const { publicKey } = useWallet()
+function SolanaLinkButton({ onLink, currentValue }: LinkButtonProps) {
+  const { publicKey, disconnect } = useWallet()
   const { setVisible } = useWalletModal()
-  const [linking, setLinking] = useState(false)
-  const [pendingAutoLink, setPendingAutoLink] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
   const connectedAddress = publicKey?.toBase58() ?? ""
-
-  useEffect(() => {
-    if (pendingAutoLink && connectedAddress) {
-      try {
-        onLink(connectedAddress, { mode: "solana" })
-        setError(null)
-      } catch (err) {
-        console.warn("[profile][solana-auto-link]", err)
-        setError(err instanceof Error ? err.message : "Could not link Solana wallet")
-      } finally {
-        setPendingAutoLink(false)
-        setLinking(false)
-      }
-    }
-  }, [pendingAutoLink, connectedAddress, onLink])
-
-  useEffect(() => {
-    if (!pendingAutoLink) {
-      setLinking(false)
-    }
-  }, [pendingAutoLink])
+  const normalizedCurrent = currentValue.trim()
+  const linked = connectedAddress && connectedAddress === normalizedCurrent
 
   return (
     <div className="flex w-full flex-col items-stretch gap-2 sm:w-auto">
       <Button
         type="button"
         className="h-10 w-full rounded-2xl bg-purple-500 px-5 text-sm font-medium text-white transition hover:bg-purple-400 sm:w-auto"
-        disabled={linking}
-        onClick={() => {
-          setPendingAutoLink(true)
-          setLinking(true)
-          setVisible(true)
+        onClick={async () => {
+          try {
+            if (typeof disconnect === "function") {
+              await disconnect()
+            }
+          } catch (err) {
+            console.warn("[profile][solana-disconnect]", err)
+          } finally {
+            setVisible(true)
+          }
         }}
       >
-        {linking ? "Connecting..." : "Connect Solana wallet"}
+        {connectedAddress ? "Switch Solana wallet" : "Connect Solana wallet"}
       </Button>
-      {error ? <p className="text-right text-xs text-red-400">{error}</p> : null}
+      {connectedAddress ? (
+        <>
+          <p className="text-xs text-white/50">
+            Connected wallet: <span className="font-mono text-white">{connectedAddress}</span>
+          </p>
+          <Button
+            type="button"
+            variant="outline"
+            className="h-8 w-full rounded-full border-white/20 text-xs uppercase tracking-wide text-white transition hover:border-cyan-400 hover:bg-cyan-400/10 sm:w-auto"
+            disabled={linked}
+            onClick={() => onLink(connectedAddress, { mode: "solana" })}
+          >
+            {linked ? "Linked" : "Link this wallet"}
+          </Button>
+        </>
+      ) : null}
     </div>
   )
 }

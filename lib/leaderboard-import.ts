@@ -7,13 +7,16 @@ export type ImportedEntry = {
   points?: number
   feesGenerated?: number
   referrerRefCode?: string | null
+  perDexPoints?: number
 }
 
 export type ImportedPayload = {
   entries: ImportedEntry[]
+  perDexEntries?: Record<string, ImportedEntry[]>
   rates?: {
     referralPointsRate?: number
     referralFeesRate?: number
+    perDexReferralPointsRate?: number
   }
 }
 
@@ -28,12 +31,23 @@ export async function ensureDataDir() {
 
 export async function saveImportedLeaderboard(payload: ImportedPayload) {
   await ensureDataDir()
+  const normalizedPerDex =
+    payload.perDexEntries && typeof payload.perDexEntries === "object"
+      ? Object.fromEntries(
+          Object.entries(payload.perDexEntries).map(([dex, arr]) => [dex, Array.isArray(arr) ? arr : []])
+        )
+      : undefined
   const normalized: ImportedPayload = {
     entries: Array.isArray(payload.entries) ? payload.entries : [],
+    perDexEntries: normalizedPerDex,
     rates: {
       referralPointsRate: payload.rates?.referralPointsRate ?? 0.10,
       referralFeesRate: payload.rates?.referralFeesRate ?? 0.20,
+      perDexReferralPointsRate: payload.rates?.perDexReferralPointsRate ?? payload.rates?.referralPointsRate ?? 0.20,
     },
+  }
+  if (!normalized.perDexEntries || Object.keys(normalized.perDexEntries).length === 0) {
+    delete normalized.perDexEntries
   }
   await fs.writeFile(storePath, JSON.stringify(normalized, null, 2), "utf-8")
 }
@@ -60,18 +74,19 @@ export type ComputedEntry = {
   referralFees: number
   totalFees: number
   referrals: number
+  perDexPoints?: number
 }
 
-export function computeLeaderboardFromImported(payload: ImportedPayload): ComputedEntry[] {
-  const entries = payload.entries || []
+export function computeLeaderboardFromImported(
+  payload: ImportedPayload,
+  sourceEntries?: ImportedEntry[],
+  options?: { usePerDexPoints?: boolean }
+): ComputedEntry[] {
+  const entries = sourceEntries ?? payload.entries ?? []
   const refPointsRate = payload.rates?.referralPointsRate ?? 0.10
   const refFeesRate = payload.rates?.referralFeesRate ?? 0.20
   const selfFeesShareRate = 0.10 // 10% of own fees counts toward Total fees
-
-  const byRefCode = new Map<string, ImportedEntry>()
-  for (const e of entries) {
-    if (e && e.refCode) byRefCode.set(e.refCode, e)
-  }
+  const perDexRefRate = payload.rates?.perDexReferralPointsRate ?? refPointsRate
 
   const childrenByRefCode = new Map<string, ImportedEntry[]>()
   for (const e of entries) {
@@ -81,6 +96,10 @@ export function computeLeaderboardFromImported(payload: ImportedPayload): Comput
     childrenByRefCode.get(parent)!.push(e)
   }
 
+  const perDexBaseByRefCode = new Map<string, number>(
+    entries.map((e) => [e.refCode, Math.max(0, Number(e.perDexPoints ?? 0))])
+  )
+
   const computed: ComputedEntry[] = []
   for (const e of entries) {
     const ownPoints = Math.max(0, Number(e.points ?? 0))
@@ -88,6 +107,16 @@ export function computeLeaderboardFromImported(payload: ImportedPayload): Comput
     const childs = childrenByRefCode.get(e.refCode) || []
     const earnedRefPoints = childs.reduce((acc, c) => acc + Math.max(0, Number(c.points ?? 0)) * refPointsRate, 0)
     const earnedRefFees = childs.reduce((acc, c) => acc + Math.max(0, Number(c.feesGenerated ?? 0)) * refFeesRate, 0)
+
+    let perDexPointsTotal: number | undefined
+    if (options?.usePerDexPoints) {
+      const basePerDex = perDexBaseByRefCode.get(e.refCode) ?? 0
+      const earnedPerDex = childs.reduce((acc, c) => {
+        const childBase = perDexBaseByRefCode.get(c.refCode) ?? 0
+        return acc + childBase * perDexRefRate
+      }, 0)
+      perDexPointsTotal = Math.round(basePerDex + earnedPerDex)
+    }
 
     const name = (e.name && e.name.trim().length > 0) ? e.name.trim() : e.refCode
     const referrals = childs.length
@@ -107,6 +136,7 @@ export function computeLeaderboardFromImported(payload: ImportedPayload): Comput
       referralFees,
       totalFees,
       referrals,
+      perDexPoints: perDexPointsTotal ?? (options?.usePerDexPoints ? Math.round(perDexBaseByRefCode.get(e.refCode) ?? 0) : undefined),
     })
   }
 

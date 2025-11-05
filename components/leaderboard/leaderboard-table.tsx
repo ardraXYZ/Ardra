@@ -9,6 +9,8 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { useAuth } from "@/components/providers/auth-provider"
 import { cn } from "@/lib/utils"
+import { ChevronDown, Info } from "lucide-react"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import DiamondPng from "@/Images/Tiers/Diamond.png"
 import GoldPng from "@/Images/Tiers/Gold.png"
 import SilverPng from "@/Images/Tiers/Silver.png"
@@ -26,7 +28,10 @@ type LeaderboardEntry = {
   referralFees: number
   totalFees: number
   referrals: number
+  perDexPoints?: number
 }
+
+type LeaderboardPerDex = Record<string, LeaderboardEntry[]>
 
 type TierName = "Diamond" | "Gold" | "Silver" | "Bronze" | "Wood"
 
@@ -96,10 +101,13 @@ const tierBreakpoints: Array<{ name: TierName; cutoff: number; label: string }> 
 ]
 
 const DEFAULT_CAPTURE_BACKGROUND = "#020617"
+const ALL_DEX_KEY = "__all__"
 
 export function LeaderboardTable() {
   const { user } = useAuth()
-  const [entries, setEntries] = useState<LeaderboardEntry[]>([])
+  const [overallEntries, setOverallEntries] = useState<LeaderboardEntry[]>([])
+  const [perDexEntries, setPerDexEntries] = useState<LeaderboardPerDex>({})
+  const [selectedDex, setSelectedDex] = useState<string>(ALL_DEX_KEY)
   const [loading, setLoading] = useState(true)
   const [shareBusy, setShareBusy] = useState(false)
   const panelRef = useRef<HTMLDivElement | null>(null)
@@ -132,10 +140,14 @@ export function LeaderboardTable() {
       try {
         const response = await fetch("/api/leaderboard", { cache: "no-store" })
         const data = await response.json()
-        setEntries(data?.leaderboard ?? [])
+        setOverallEntries(data?.leaderboard ?? [])
+        setPerDexEntries(
+          data?.perDex && typeof data.perDex === "object" ? (data.perDex as LeaderboardPerDex) : {}
+        )
       } catch (error) {
         console.error(error)
-        setEntries([])
+        setOverallEntries([])
+        setPerDexEntries({})
       } finally {
         setLoading(false)
       }
@@ -143,13 +155,35 @@ export function LeaderboardTable() {
     void load()
   }, [])
 
+  useEffect(() => {
+    if (selectedDex !== ALL_DEX_KEY && !perDexEntries[selectedDex]) {
+      setSelectedDex(ALL_DEX_KEY)
+    }
+  }, [perDexEntries, selectedDex])
+
+  const dexOptions = useMemo(
+    () => Object.keys(perDexEntries).sort((a, b) => a.localeCompare(b)),
+    [perDexEntries]
+  )
+
+  const displayedEntries = useMemo(() => {
+    if (selectedDex === ALL_DEX_KEY) return overallEntries
+    return perDexEntries[selectedDex] ?? []
+  }, [overallEntries, perDexEntries, selectedDex])
+
+  const selectedDexLabel = selectedDex === ALL_DEX_KEY ? "All PerpDex" : selectedDex
+  const selectedDexPointsHeader =
+    selectedDex === ALL_DEX_KEY ? null : `${selectedDexLabel} Points`
+  const baseColumnCount = 8
+  const tableColumnCount = selectedDex === ALL_DEX_KEY ? baseColumnCount : baseColumnCount + 1
+
   const me = useMemo(() => {
     if (!user?.refCode) return null
-    const idx = entries.findIndex((e) => e.refCode === user.refCode)
-    return idx >= 0 ? { entry: entries[idx], rank: idx + 1 } : null
-  }, [entries, user?.refCode])
+    const idx = overallEntries.findIndex((e) => e.refCode === user.refCode)
+    return idx >= 0 ? { entry: overallEntries[idx], rank: idx + 1 } : null
+  }, [overallEntries, user?.refCode])
 
-  const participants = entries.length
+  const participants = overallEntries.length
   const percentile = useMemo(() => {
     if (!me || participants === 0) return null
     return me.rank / participants
@@ -623,14 +657,52 @@ export function LeaderboardTable() {
           <p className="text-sm text-white/60">
             Points blend your personal activity with 10% referral fees routed from your network. Climb by farming and by sharing your code.
           </p>
+          {selectedDex !== ALL_DEX_KEY && (
+            <p className="mt-2 text-xs uppercase tracking-[0.28em] text-white/45">
+              Viewing {selectedDexLabel}
+            </p>
+          )}
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end sm:gap-6">
+          {dexOptions.length > 0 && (
+            <div className="group relative min-w-[12rem] sm:w-auto">
+              <div className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-r from-white/[0.09] via-white/[0.04] to-transparent opacity-90 transition group-hover:opacity-100 group-focus-within:from-cyan-400/30 group-focus-within:via-cyan-400/20 group-focus-within:to-transparent" />
+              <div className="pointer-events-none absolute inset-0 rounded-full border border-white/15 transition group-hover:border-white/25 group-focus-within:border-cyan-300" />
+              <select
+                value={selectedDex}
+                onChange={(event) => setSelectedDex(event.target.value)}
+                className="relative z-10 h-11 w-full appearance-none rounded-full bg-transparent px-5 pr-12 text-sm font-medium text-white/80 backdrop-blur focus:outline-none"
+                aria-label="Filter leaderboard by PerpDex"
+              >
+                <option style={{ backgroundColor: "#040b18", color: "#f8fafc" }} value={ALL_DEX_KEY}>
+                  All PerpDex
+                </option>
+                {dexOptions.map((dex) => (
+                  <option
+                    key={dex}
+                    value={dex}
+                    style={{ backgroundColor: "#040b18", color: "#f8fafc" }}
+                  >
+                    {dex}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="pointer-events-none absolute right-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-white/60 transition group-focus-within:text-cyan-200" />
+            </div>
+          )}
           {user ? (
-            <Button asChild variant="outline" className="h-11 px-6 border-white/30 text-white hover:bg-white/10">
+            <Button
+              asChild
+              variant="outline"
+              className="h-11 rounded-full border-white/25 px-6 text-white shadow-[0_10px_30px_rgba(0,0,0,0.3)] transition hover:border-cyan-400 hover:bg-white/10"
+            >
               <Link href="/profile">Manage profile</Link>
             </Button>
           ) : (
-            <Button asChild className="h-11 px-6 bg-cyan-500 text-black hover:bg-cyan-400">
+            <Button
+              asChild
+              className="h-11 rounded-full bg-cyan-500 px-6 text-black shadow-[0_10px_30px_rgba(6,182,212,0.35)] transition hover:bg-cyan-400"
+            >
               <Link href="/login">Join Ardra</Link>
             </Button>
           )}
@@ -648,24 +720,42 @@ export function LeaderboardTable() {
               <th className="py-3 pr-4">Fees generated</th>
               <th className="py-3 pr-4">Referral fees</th>
               <th className="py-3 pr-4">Total fees</th>
-              <th className="py-3 pr-6">Referrals</th>
+              <th className="py-3 pr-4">Referrals</th>
+              {selectedDexPointsHeader && (
+                <th className="py-3 pr-6">
+                  <div className="flex items-center justify-end gap-2 text-right">
+                    <span>{selectedDexPointsHeader}</span>
+                    <Tooltip>
+                      <TooltipTrigger className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-white/20 text-white/70 transition hover:border-cyan-400 hover:text-cyan-200">
+                        <Info className="h-3.5 w-3.5" />
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="max-w-xs bg-black/90 text-white shadow-lg">
+                        This is an estimate of your current points for this campaign. When the airdrop happens, Ardra
+                        redistributes the tokens according to your share.
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                </th>
+              )}
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5">
             {loading ? (
               <tr>
-                <td colSpan={8} className="py-6 text-center text-white/50">
+                <td colSpan={tableColumnCount} className="py-6 text-center text-white/50">
                   Loading leaderboard...
                 </td>
               </tr>
-            ) : entries.length === 0 ? (
+            ) : displayedEntries.length === 0 ? (
               <tr>
-                <td colSpan={8} className="py-6 text-center text-white/50">
-                  No members yet. Invite friends and start farming to see your name climb.
+                <td colSpan={tableColumnCount} className="py-6 text-center text-white/50">
+                  {selectedDex === ALL_DEX_KEY
+                    ? "No members yet. Invite friends and start farming to see your name climb."
+                    : `No records for ${selectedDexLabel} yet.`}
                 </td>
               </tr>
             ) : (
-              entries.map((entry, index) => (
+              displayedEntries.map((entry, index) => (
                 <tr key={entry.id} className={index === 0 ? "bg-white/5" : undefined}>
                   <td className="py-3 pl-6 pr-4 font-mono text-white/70">#{index + 1}</td>
                   <td className="py-3 pr-4 text-white">{entry.name}</td>
@@ -674,7 +764,12 @@ export function LeaderboardTable() {
                   <td className="py-3 pr-4 text-white/70">${formatCurrency(entry.feesGenerated)}</td>
                   <td className="py-3 pr-4 text-white/60">${formatCurrency(entry.referralFees)}</td>
                   <td className="py-3 pr-4 text-white/60">${formatCurrency(entry.totalFees)}</td>
-                  <td className="py-3 pr-6 text-white/60">{entry.referrals}</td>
+                  <td className="py-3 pr-4 text-white/60">{entry.referrals}</td>
+                  {selectedDexPointsHeader && (
+                    <td className="py-3 pr-6 text-right font-medium text-white">
+                      {formatInt(entry.perDexPoints ?? 0)}
+                    </td>
+                  )}
                 </tr>
               ))
             )}

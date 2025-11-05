@@ -4,7 +4,13 @@ import { prisma } from "@/lib/prisma"
 import { readUsers as readUsersFs } from "@/lib/user-store"
 import { saveImportedLeaderboard, type ImportedPayload } from "@/lib/leaderboard-import"
 
-type RawRow = { identifier: string; points: number; feesGenerated: number }
+type RawRow = {
+  identifier: string
+  points: number
+  feesGenerated: number
+  exchange?: string | null
+  exchangePoints?: number | null
+}
 
 function isEvmAddress(str: string) {
   return /^0x[0-9a-fA-F]{40}$/.test(str.trim())
@@ -70,6 +76,21 @@ function pickNumber(rec: Record<string, any>, names: string[], def = 0) {
   return def
 }
 
+function pickString(rec: Record<string, any>, names: string[], def: string | null = null) {
+  const lowerMap = new Map(Object.keys(rec).map((k) => [k.toLowerCase(), k]))
+  for (const name of names) {
+    const k = lowerMap.get(name)
+    if (!k) continue
+    const raw = rec[k]
+    if (typeof raw === "string" && raw.trim()) return raw.trim()
+    if (raw != null && typeof raw.toString === "function") {
+      const text = raw.toString().trim()
+      if (text) return text
+    }
+  }
+  return def
+}
+
 function parseCSV(content: string): Record<string, string>[] {
   const rows: string[][] = []
   let cur: string[] = []
@@ -121,25 +142,87 @@ function parseCSV(content: string): Record<string, string>[] {
     return Number.isFinite(n)
   }
 
-  // Detect headerless CSV: first row looks like data (addr, num, num)
+  // Detect headerless CSV: first row looks like data
   const r0 = rows[0]
   const r1 = rows[1]
+  const firstLooksAddress = !!(r0 && r0.length >= 1 && (isEvmAddress(r0[0]) || isSolanaLikeAddress(r0[0])))
+  const secondLooksAddress = !!(r0 && r0.length >= 2 && (isEvmAddress(r0[1]) || isSolanaLikeAddress(r0[1])))
+
+  const headerlessLayout = (() => {
+    if (!r0) return null
+    if (firstLooksAddress) {
+      return {
+        exchangeIndex: null as number | null,
+        identifierIndex: 0,
+        pointsIndex: r0.length > 1 ? 1 : -1,
+        feesIndex: r0.length > 2 ? 2 : -1,
+        dexPointsIndex: r0.length > 3 ? 3 : -1,
+      }
+    }
+    if (secondLooksAddress) {
+      return {
+        exchangeIndex: 0,
+        identifierIndex: 1,
+        pointsIndex: r0.length > 2 ? 2 : -1,
+        feesIndex: r0.length > 3 ? 3 : -1,
+        dexPointsIndex: r0.length > 4 ? 4 : -1,
+      }
+    }
+    return null
+  })()
+
   const looksHeaderless = !!(
-    r0 && r0.length >= 1 && (isEvmAddress(r0[0]) || isSolanaLikeAddress(r0[0])) &&
+    headerlessLayout &&
     (!r1 || r1.length === r0.length) &&
-    (r0.length === 1 || isNumericLike(r0[1]) || r0[1] === "") &&
-    (r0.length < 3 || isNumericLike(r0[2]) || r0[2] === "")
+    (headerlessLayout.pointsIndex === -1 ||
+      isNumericLike(r0[headerlessLayout.pointsIndex] || "") ||
+      r0[headerlessLayout.pointsIndex] === "") &&
+    (headerlessLayout.feesIndex === -1 ||
+      isNumericLike(r0[headerlessLayout.feesIndex] || "") ||
+      r0[headerlessLayout.feesIndex] === "") &&
+    (headerlessLayout.dexPointsIndex === -1 ||
+      r0.length <= headerlessLayout.dexPointsIndex ||
+      isNumericLike(r0[headerlessLayout.dexPointsIndex] || "") ||
+      r0[headerlessLayout.dexPointsIndex] === "")
   )
 
   const out: Record<string, string>[] = []
-  if (looksHeaderless) {
+  if (looksHeaderless && headerlessLayout) {
     for (let i = 0; i < rows.length; i++) {
       const r = rows[i]
       if (!r || r.every((c) => (c ?? "").toString().trim() === "")) continue
       const obj: Record<string, string> = {}
-      obj["identifier"] = (r[0] ?? "").toString().trim()
-      if (r.length > 1) obj["points"] = (r[1] ?? "").toString().trim()
-      if (r.length > 2) obj["feesgenerated"] = (r[2] ?? "").toString().trim()
+      if (headerlessLayout.exchangeIndex != null && r.length > headerlessLayout.exchangeIndex) {
+        const val = (r[headerlessLayout.exchangeIndex] ?? "").toString().trim()
+        if (val) {
+          obj["exchange"] = val
+          obj["corretora"] = val
+        }
+      }
+      if (r.length > headerlessLayout.identifierIndex) {
+        obj["identifier"] = (r[headerlessLayout.identifierIndex] ?? "").toString().trim()
+      }
+      if (headerlessLayout.pointsIndex !== -1 && r.length > headerlessLayout.pointsIndex) {
+        obj["points"] = (r[headerlessLayout.pointsIndex] ?? "").toString().trim()
+      }
+      if (headerlessLayout.feesIndex !== -1 && r.length > headerlessLayout.feesIndex) {
+        obj["feesgenerated"] = (r[headerlessLayout.feesIndex] ?? "").toString().trim()
+      }
+      const dynamicDexIndex =
+        headerlessLayout.dexPointsIndex !== -1
+          ? headerlessLayout.dexPointsIndex
+          : headerlessLayout.feesIndex !== -1
+            ? headerlessLayout.feesIndex + 1
+            : -1
+      if (dynamicDexIndex !== -1) {
+        let val = ""
+        if (r.length > dynamicDexIndex) {
+          val = (r[dynamicDexIndex] ?? "").toString().trim()
+        }
+        obj["exchangepoints"] = val
+        obj["dexpoints"] = val
+        obj["perpdexpoints"] = val
+      }
       out.push(obj)
     }
     return out
@@ -170,9 +253,29 @@ async function parseBuffer(filename: string, buf: Buffer): Promise<RawRow[]> {
       if (!rec || typeof rec !== "object") continue
       const id = pickIdentifier(rec)
       if (!id) continue
-      const points = pickNumber(rec, ["points", "pts", "totalpoints", "score"], 0)
+      const points = pickNumber(rec, ["volume", "notional", "points", "pts", "totalpoints", "score"], 0)
       const fees = pickNumber(rec, ["feesgenerated", "fees", "totalfees"], 0)
-      rows.push({ identifier: id, points, feesGenerated: fees })
+      const exchange = pickString(rec, ["exchange", "dex", "perpdex", "broker", "venue", "market", "corretora"], null)
+      let exchangePoints = pickNumber(
+        rec,
+        ["exchangepoints", "dexpoints", "perpdexpoints", "campaignpoints", "sharepoints"],
+        Number.NaN
+      )
+      if (!Number.isFinite(exchangePoints) && "points" in rec && "volume" in rec) {
+        const explicit = pickNumber(rec, ["points"], Number.NaN)
+        if (Number.isFinite(explicit)) exchangePoints = explicit
+      }
+      const normalizedExchangePoints = Number.isFinite(exchangePoints) ? exchangePoints : null
+      if (normalizedExchangePoints != null && process.env.NODE_ENV !== "production") {
+        console.log("[ingest:csv] points", filename, id, normalizedExchangePoints)
+      }
+      rows.push({
+        identifier: id,
+        points,
+        feesGenerated: fees,
+        exchange,
+        exchangePoints: normalizedExchangePoints,
+      })
     }
     return rows
   }
@@ -183,9 +286,25 @@ async function parseBuffer(filename: string, buf: Buffer): Promise<RawRow[]> {
     for (const rec of recs) {
       const id = pickIdentifier(rec)
       if (!id) continue
-      const points = pickNumber(rec, ["points", "pts", "totalpoints", "score"], 0)
+      const points = pickNumber(rec, ["volume", "notional", "points", "pts", "totalpoints", "score"], 0)
       const fees = pickNumber(rec, ["feesgenerated", "fees", "totalfees"], 0)
-      rows.push({ identifier: id, points, feesGenerated: fees })
+      const exchange = pickString(rec, ["exchange", "dex", "perpdex", "broker", "venue", "market", "corretora"], null)
+      let exchangePoints = pickNumber(
+        rec,
+        ["exchangepoints", "dexpoints", "perpdexpoints", "campaignpoints", "sharepoints"],
+        Number.NaN
+      )
+      if (!Number.isFinite(exchangePoints) && "points" in rec && "volume" in rec) {
+        const explicit = pickNumber(rec, ["points"], Number.NaN)
+        if (Number.isFinite(explicit)) exchangePoints = explicit
+      }
+      rows.push({
+        identifier: id,
+        points,
+        feesGenerated: fees,
+        exchange,
+        exchangePoints: Number.isFinite(exchangePoints) ? exchangePoints : null,
+      })
     }
     return rows
   }
@@ -293,7 +412,11 @@ export async function ingestReportsFromDir(dirPath: string) {
   await fs.mkdir(fullDir, { recursive: true })
   const files = (await fs.readdir(fullDir)).filter((f) => /\.(json|xlsx|csv)$/i.test(f))
 
-  const aggregated = new Map<string, { points: number; fees: number }>() // by refCode
+  const aggregated = new Map<string, { points: number; fees: number; dexPoints?: number }>() // by refCode
+  const aggregatedByDex = new Map<
+    string,
+    { label: string; entries: Map<string, { points: number; fees: number; dexPoints: number }> }
+  >()
   const unknownIdentifiers: { file: string; value: string }[] = []
   const ambiguousIdentifiers: { file: string; value: string; owners: string[] }[] = []
 
@@ -309,6 +432,12 @@ export async function ingestReportsFromDir(dirPath: string) {
         unknownIdentifiers.push({ file: f, value: id })
         continue
       }
+      if (process.env.NODE_ENV !== "production") {
+        console.log("[ingest:match]", id, Array.from(setExact))
+        if (Number(row.exchangePoints ?? 0) > 0) {
+          console.log("[ingest:dexPoints]", row.exchange, id, row.exchangePoints)
+        }
+      }
       let chosen: string | null = null
       if (setExact.size > 1) {
         // Try to disambiguate using canonical owner preference
@@ -323,10 +452,37 @@ export async function ingestReportsFromDir(dirPath: string) {
         chosen = Array.from(setExact)[0]
       }
       const exact = chosen
-      const acc = aggregated.get(exact) || { points: 0, fees: 0 }
-      acc.points += Math.max(0, Number(row.points || 0))
+      const volumeContribution = Math.max(0, Number(row.points || 0))
+      const shareContribution = Number.isFinite(row.exchangePoints as number)
+        ? Math.max(0, Number(row.exchangePoints || 0))
+        : 0
+
+      const acc = aggregated.get(exact) || { points: 0, fees: 0, dexPoints: 0 }
+      acc.points += volumeContribution
       acc.fees += Math.max(0, Number(row.feesGenerated || 0))
+      acc.dexPoints = (acc.dexPoints ?? 0) + shareContribution
       aggregated.set(exact, acc)
+
+      const rawExchange = typeof row.exchange === "string" ? row.exchange : ""
+      const exchange = rawExchange.trim()
+      if (exchange) {
+        const normalized = exchange.toLowerCase()
+        let bucket = aggregatedByDex.get(normalized)
+        if (!bucket) {
+          bucket = { label: exchange, entries: new Map() }
+          aggregatedByDex.set(normalized, bucket)
+        }
+        const dexMap = bucket.entries
+        const dexAcc = dexMap.get(exact) || { points: 0, fees: 0, dexPoints: 0 }
+        dexAcc.points += volumeContribution
+        dexAcc.fees += Math.max(0, Number(row.feesGenerated || 0))
+        dexAcc.dexPoints += shareContribution
+        dexMap.set(exact, dexAcc)
+        // ensure latest non-empty label wins if previous was empty-ish
+        if (!bucket.label || bucket.label.trim().length === 0) {
+          bucket.label = exchange
+        }
+      }
     }
   }
 
@@ -375,17 +531,41 @@ export async function ingestReportsFromDir(dirPath: string) {
     } catch {}
   }
 
-  const entries = Array.from(aggregated.entries()).map(([refCode, sums]) => ({
-    refCode,
-    name: nameByRefCode.get(refCode),
-    points: Math.round(sums.points),
-    feesGenerated: Number(sums.fees.toFixed(2)),
-    referrerRefCode: referrerByChildRefCode.get(refCode) ?? null,
-  }))
+  const mapToImportedEntries = (
+    source: Iterable<[string, { points: number; fees: number; dexPoints?: number }]>
+  ) =>
+    Array.from(source).map(([refCode, sums]) => {
+      const volumePoints = Math.max(0, Number(sums.points ?? 0))
+      const entry: ImportedEntry = {
+        refCode,
+        name: nameByRefCode.get(refCode),
+        points: Math.round(volumePoints),
+        feesGenerated: Number(sums.fees.toFixed(2)),
+        referrerRefCode: referrerByChildRefCode.get(refCode) ?? null,
+      }
+      if (Number.isFinite(sums.dexPoints as number)) {
+        entry.perDexPoints = Math.round(Number(sums.dexPoints))
+      }
+      return entry
+    })
+
+  const entries = mapToImportedEntries(aggregated.entries())
+
+  const perDexEntriesRecord: Record<string, typeof entries> = {}
+  if (process.env.NODE_ENV !== "production") {
+    for (const [dexKey, { entries: perDexMap }] of aggregatedByDex.entries()) {
+      console.log("[ingest] dex aggregate", dexKey, Array.from(perDexMap.entries()))
+    }
+  }
+  for (const { label, entries: perDexMap } of aggregatedByDex.values()) {
+    const key = label.trim() || "unknown"
+    perDexEntriesRecord[key] = mapToImportedEntries(perDexMap.entries())
+  }
 
   const payload: ImportedPayload = {
-    rates: { referralPointsRate: 0.10, referralFeesRate: 0.20 },
+    rates: { referralPointsRate: 0.10, referralFeesRate: 0.20, perDexReferralPointsRate: 0.20 },
     entries,
+    perDexEntries: Object.keys(perDexEntriesRecord).length > 0 ? perDexEntriesRecord : undefined,
   }
 
   await saveImportedLeaderboard(payload)
@@ -397,5 +577,11 @@ export async function ingestReportsFromDir(dirPath: string) {
     unknownIdentifiers,
     ambiguousIdentifiers,
     profileConflictsIgnored,
+    perDexPreview: Object.fromEntries(
+      Array.from(aggregatedByDex.entries()).map(([key, { label, entries: map }]) => [
+        label.trim() || key,
+        Array.from(map.entries()),
+      ])
+    ),
   }
 }
