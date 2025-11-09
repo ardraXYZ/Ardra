@@ -34,9 +34,9 @@ export function SiteHeader({ className }: { className?: string }) {
             <Image
               src="/images/ArdraLogo.png"
               alt="Ardra"
-              width={180}
-              height={60}
-              className="h-10 w-auto object-contain"
+              width={220}
+              height={70}
+              className="h-12 w-auto object-contain"
               priority
             />
           </Link>
