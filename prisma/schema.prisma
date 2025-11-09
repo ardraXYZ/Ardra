@@ -5,6 +5,9 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  // Use direct connection (no pooler) for migrations/CLI
+  // Ensure DIRECT_DATABASE_URL is set to the primary DB host (db.<project-ref>.supabase.co)
+  directUrl = env("DIRECT_DATABASE_URL")
 }
 
 model User {

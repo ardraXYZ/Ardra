@@ -189,6 +189,27 @@ export function LeaderboardTable() {
     return me.rank / participants
   }, [me, participants])
 
+  // Global sum of Ardra Points across all users
+  const totalArdraPointsAllUsers = useMemo(() => {
+    try {
+      return overallEntries.reduce((acc, e) => acc + (Number(e.totalPoints) || 0), 0)
+    } catch {
+      return 0
+    }
+  }, [overallEntries])
+
+  // Estimated airdrop value for current user based on FDV * 0.2
+  const FDV_ESTIMATE = 1_000_000
+  const AIRDROP_RATE = 0.2
+  const airdropPoolUsd = FDV_ESTIMATE * AIRDROP_RATE
+  const myEstimatedUsd = useMemo(() => {
+    if (!me) return 0
+    const myPts = Number(me.entry.totalPoints) || 0
+    const denom = Number(totalArdraPointsAllUsers) || 0
+    if (denom <= 0) return 0
+    return (airdropPoolUsd * myPts) / denom
+  }, [me, totalArdraPointsAllUsers])
+
   const tier = useMemo(() => {
     if (percentile == null) return null
     if (percentile <= 0.1) return { name: "Diamond" as const }
@@ -436,6 +457,10 @@ export function LeaderboardTable() {
   }
   return (
     <div className="space-y-12">
+      <div className="flex items-center gap-2">
+        <span className="rounded-full border border-white/15 px-3 py-1 text-[11px] text-white/45">Season 1</span>
+        <span className="rounded-full border border-white/30 bg-white/10 px-3 py-1 text-[11px] text-white">Season 0 (Beta)</span>
+      </div>
       <Card className="relative overflow-hidden rounded-[32px] border-white/10 bg-white/[0.04] p-8 shadow-[0_25px_80px_rgba(15,118,110,0.2)] backdrop-blur-xl">
         <div className="pointer-events-none absolute inset-px rounded-[30px] border border-white/10 opacity-50" aria-hidden />
         <div className="pointer-events-none absolute -left-32 top-0 h-64 w-64 rounded-full bg-cyan-500/25 blur-3xl" aria-hidden />
@@ -527,12 +552,28 @@ export function LeaderboardTable() {
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] p-4 shadow-[0_18px_38px_rgba(56,189,248,0.1)]">
+                    <div className="absolute right-3 top-3">
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button type="button" className="cursor-help text-white/50 transition hover:text-white" aria-label="Ardra Points valuation info">
+                            <Info className="h-4 w-4" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs text-xs">
+                          <p>
+                            Estimated Ardra Points airdrop value is an estimate only. The current assumed FDV is
+                            $1,000,000 and the estimate grows as the project grows. This estimate is subject to change
+                            due to market volatility.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
                     <span className="text-[11px] uppercase tracking-[0.24em] text-white/40">Ardra Points</span>
                     <p className="mt-3 text-3xl font-semibold text-white">
                       <span ref={pointsRef}>{formatInt(me.entry.totalPoints)}</span>
                     </p>
                     <p className="mt-1 text-xs text-white/45">
-                      {formatInt(me.entry.points)} core + {formatInt(me.entry.referralPoints)} network
+                      {`Valued up to $${formatCurrency(myEstimatedUsd)}`}
                     </p>
                   </div>
                   <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] p-4 shadow-[0_18px_38px_rgba(251,191,36,0.12)]">
