@@ -190,7 +190,7 @@ const FARMS: FarmEntry[] = [
 
     modes: ["evm"],
 
-    referral: { type: "link", url: "https://hibachi.xyz/r/ardra" },
+    referral: { type: "link", url: "https://hibachi.xyz/r/ardrahub" },
 
   },
 
@@ -200,11 +200,11 @@ const FARMS: FarmEntry[] = [
 
     name: "Pacifica",
 
-    status: "soon",
+    status: "live",
 
     modes: ["solana"],
 
-    referral: { type: "codes" },
+    referral: { type: "link", url: "https://app.pacifica.fi?referral=Ardra" },
 
   },
 

@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
 
 import { Button } from "@/components/ui/button"
-import { Mail, Twitter, Copy, Check, X } from "lucide-react"
+import { AtSign, Copy, Check, X } from "lucide-react"
+import XLogoPng from "@/Images/Ardra Assets/Xlogo.png"
 
 const emailAddress = "manager@ardra.xyz"
 
@@ -50,17 +52,22 @@ export function SiteFooter() {
   }
 
   return (
-    <footer className="mt-24 border-t border-white/10 bg-black/90">
-      <div className="mx-auto flex max-w-6xl flex-col gap-2 px-6 py-8 text-sm text-white/60 sm:flex-row sm:items-center sm:justify-between">
-        <span>&copy; 2025 Ardra</span>
-        <div className="flex flex-wrap items-center gap-4">
+    <footer className="-mt-px">
+      {/* Wrap the frame inside site width to avoid extra-wide footer */}
+      <div className="site-wrap mx-auto -mt-px">
+        <div className="frame frame--bottom-link relative overflow-hidden">
+          <div className="flex flex-col gap-2 px-6 py-3 text-sm text-white/60 sm:flex-row sm:items-center sm:justify-between">
+            <span>&copy; 2025 Ardra</span>
+            <div className="flex flex-wrap items-center gap-4">
           <Button
             asChild
             variant="outline"
             size="sm"
             className="border-white/15 bg-transparent text-white/70 transition-colors hover:border-white/30 hover:text-white"
           >
-            <Link href="/privacypolicy">Privacy Policy</Link>
+            <Link href="https://forms.gle/6h4ZonFJvFzwGccU9" target="_blank" rel="noopener noreferrer">
+              Affiliate program
+            </Link>
           </Button>
           <button
             type="button"
@@ -69,18 +76,20 @@ export function SiteFooter() {
             aria-label="Open Ardra email popup"
             title={emailAddress}
           >
-            <Mail className="h-5 w-5" aria-hidden="true" />
+            <AtSign className="h-5 w-5" aria-hidden="true" />
           </button>
           <Link
-            href="https://twitter.com/ArdraHub"
+            href="https://x.com/ArdraHub"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white/70 transition-colors hover:border-white/30 hover:text-white"
-            aria-label="Open Ardra on Twitter"
-            title="@ArdraHub"
+            aria-label="Open Ardra on X"
+            title="@ArdraHub on X"
           >
-            <Twitter className="h-5 w-5" aria-hidden="true" />
+            <Image src={XLogoPng} alt="X logo" width={20} height={20} className="h-5 w-5 object-contain" />
           </Link>
+            </div>
+          </div>
         </div>
       </div>
 

@@ -67,6 +67,7 @@ export type ComputedEntry = {
   id: string
   name: string
   refCode: string
+  referrerRefCode?: string | null
   points: number
   referralPoints: number
   totalPoints: number
@@ -129,6 +130,7 @@ export function computeLeaderboardFromImported(
       id: e.refCode,
       name,
       refCode: e.refCode,
+      referrerRefCode: e.referrerRefCode ?? null,
       points: ownPoints,
       referralPoints,
       totalPoints,

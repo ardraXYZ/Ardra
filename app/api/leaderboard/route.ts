@@ -69,6 +69,7 @@ export async function GET() {
         id: u.id,
         name: (u.username && u.username.length > 0) ? u.username : (u.name ?? "Pilot"),
         refCode: u.refCode,
+        referrerRefCode: null,
         points: 0,
         referralPoints: refPoints,
         totalPoints: refPoints,

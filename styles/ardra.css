@@ -1,0 +1,61 @@
+@keyframes ardra-float {
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(-4px); }
+  100% { transform: translateY(0); }
+}
+
+.animate-ardra-float {
+  animation: ardra-float 6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-ardra-float { animation: none !important; }
+}
+
+/* Flowing neon stroke used for the inner border layer */
+@keyframes ardra-border-flow {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+.animate-ardra-border {
+  animation: ardra-border-flow 7s linear infinite;
+}
+
+/* Utility: gradient background for the neon border layer */
+.ardra-border-bg {
+  background-image:
+    linear-gradient(90deg, rgba(168,85,247,0) 0%, rgba(168,85,247,.45) 50%, rgba(34,211,238,0) 100%);
+  background-size: 200% 100%;
+  background-position: 0% 50%;
+}
+
+/* ===== Vertical Monitor Look (CSS only) ===== */
+.ardra-monitor-body{
+  position: absolute; inset: 0; border-radius: 28px;
+  background: linear-gradient(180deg,#0c1117,#090d12);
+  border: 1px solid rgba(255,255,255,.1);
+  box-shadow: 0 28px 80px rgba(0,0,0,.5), 0 0 40px rgba(34,211,238,.12);
+}
+.ardra-monitor-screen{
+  position: absolute; inset: 10% 8% 18% 8%; border-radius: 18px;
+  background:
+    radial-gradient(120% 120% at 20% 0%, rgba(34,211,238,.12), transparent 60%),
+    radial-gradient(120% 160% at 90% 100%, rgba(232,121,249,.10), transparent 60%),
+    #05080c;
+  border: 1px solid rgba(255,255,255,.08);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.06), inset 0 -16px 32px rgba(0,0,0,.45);
+}
+.ardra-monitor-screen::after{
+  content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+  background-image: linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px);
+  background-size: 100% 3px; opacity:.25;
+}
+.monitor-lug{ position:absolute; top: 46%; width: 12px; height: 52px; background: rgba(255,255,255,.09); border-radius: 8px; }
+.monitor-lug-left{ left: -6px; }
+.monitor-lug-right{ right: -6px; }
+.monitor-chin{ position:absolute; left: 8%; right: 8%; bottom: 12%; height: 40px; border: 1px solid rgba(255,255,255,.1); border-radius: 12px; background: rgba(255,255,255,.05); box-shadow: inset 0 0 0 1px rgba(255,255,255,.02); display:flex; align-items:center; gap:10px; padding-inline:12px; }
+.monitor-chin .knob{ width: 10px; height:10px; border-radius:999px; background: rgba(255,255,255,.35); box-shadow: inset 0 2px 0 rgba(255,255,255,.2); }
+.monitor-chin .led{ width: 8px; height:8px; border-radius:999px; margin-left:auto; background: #10b981; box-shadow: 0 0 12px rgba(16,185,129,.8); opacity:.85; }
+.monitor-stand{ position:absolute; left: 47%; right:47%; bottom: 5%; height: 48px; background: rgba(255,255,255,.08); border-radius: 8px; }
+.monitor-base{ position:absolute; left: 35%; right:35%; bottom: 0; height: 20px; border-radius: 999px; background: rgba(255,255,255,.10); box-shadow: 0 8px 28px rgba(0,0,0,.5); }
