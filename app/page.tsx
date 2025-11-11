@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic"
 
 export default function Home() {
   return (
-    <div className="h-[100svh] overflow-hidden bg-[#05040f] relative isolate">
+    <div className="min-h-[100svh] md:h-[100svh] overflow-x-clip md:overflow-hidden bg-[#05040f] relative isolate">
       <SiteHeader />
       {/* Global background for entire homepage to avoid visible cuts */}
       <div className="absolute inset-0 -z-10 overflow-hidden">

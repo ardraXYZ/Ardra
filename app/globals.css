@@ -363,6 +363,21 @@
     flex: 1 1 auto;
   }
 
+  /* On small screens allow hero/content to grow and scroll
+     Fixes issue where only the badge was visible due to overflow clipping */
+  @media (max-width: 767px) {
+    .home-stack {
+      height: auto;
+      min-height: 0;
+      overflow: visible;
+    }
+    .hero-fit {
+      height: auto;
+      min-height: 0;
+      overflow: visible;
+    }
+  }
+
   /* Neon gradient border for supporter cards */
   .neon-card {
     position: relative;
