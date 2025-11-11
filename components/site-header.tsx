@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils"
 const navItems = [
   { href: "/bots", label: "Bots" },
   { href: "/leaderboard", label: "Leaderboard" },
-  { href: "/docs", label: "Docs" },
+  { href: "https://docs.ardra.xyz/", label: "Docs", external: true },
   { href: "#", label: "Roadmap" },
 ]
 
@@ -23,13 +23,12 @@ export function SiteHeader({ className }: { className?: string }) {
     <header
       className={cn(
         "fixed inset-x-0 top-0 z-50 transition-colors",
-        "border-b border-white/10 bg-black/50",
-        "[mask-image:linear-gradient(to_bottom,black_70%,transparent)]",
         className
       )}
     >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="h-20 flex items-center justify-between gap-4">
+      <div className="site-wrap mx-auto">
+        <div className="frame frame--header mb-[-1px] py-2 px-4 sm:px-6 md:px-8 relative overflow-hidden">
+          <div className="h-20 flex items-center justify-between gap-4">
           <Link href="/" className="flex items-center gap-3">
             <Image
               src="/images/ArdraLogo.png"
@@ -43,7 +42,8 @@ export function SiteHeader({ className }: { className?: string }) {
 
           <nav className="hidden md:flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-2 py-1.5">
             {navItems.map((item) => {
-              const isActive = item.href !== "#" && (pathname === item.href || (pathname.startsWith(item.href) && item.href !== "/"))
+              const isExternal = Boolean(item.external) || item.href.startsWith("http")
+              const isActive = !isExternal && item.href !== "#" && (pathname === item.href || (pathname.startsWith(item.href) && item.href !== "/"))
 
               if (item.href === "#") {
                 return (
@@ -60,6 +60,8 @@ export function SiteHeader({ className }: { className?: string }) {
                 <Link
                   key={item.href}
                   href={item.href}
+                  target={isExternal ? "_blank" : undefined}
+                  rel={isExternal ? "noreferrer" : undefined}
                   className={cn(
                     "rounded-full px-4 py-2 text-sm font-medium transition",
                     "text-white/70 hover:text-white hover:bg-white/10",
@@ -82,7 +84,14 @@ export function SiteHeader({ className }: { className?: string }) {
                   <span className="text-sm text-white/80">{user.name}</span>
                 </div>
                 <Button asChild variant="ghost" className="text-white/80 hover:text-white">
-                  <Link href="/profile">Dashboard</Link>
+                  <Link href="/profile">Profile</Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="ghost"
+                  className="text-white/80 hover:text-white"
+                >
+                  <Link href="/dashboard">Dashboard</Link>
                 </Button>
                 <Button
                   className="bg-gradient-to-r from-cyan-400 via-fuchsia-400 to-emerald-400 text-black hover:from-cyan-300 hover:via-fuchsia-300 hover:to-emerald-300"
@@ -108,6 +117,7 @@ export function SiteHeader({ className }: { className?: string }) {
             )}
           </div>
         </div>
+      </div>
       </div>
     </header>
   )
