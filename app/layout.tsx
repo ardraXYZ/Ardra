@@ -1,4 +1,4 @@
-import type { Metadata } from "next"
+﻿import type { Metadata } from "next"
 import { Suspense } from "react"
 import { Geist, Geist_Mono, Orbitron } from "next/font/google"
 import "./globals.css"
@@ -24,11 +24,9 @@ const orbitron = Orbitron({
 })
 
 export const metadata: Metadata = {
-  title: "Ardra - Airdrop Bots Hub",
+  title: "Ardra Hub",
   description: "Ardra is the futuristic hub for airdrop farming bots on Perp DEX.",
-  icons: {
-    icon: [
-      { url: "/favicon.ico" },
+  icons: { icon: [{ url: "/favicon.ico" }], shortcut: "/favicon.ico" },
       { url: "/icon.svg", type: "image/svg+xml" },
     ],
     apple: [{ url: "/icon.png", sizes: "180x180", type: "image/png" }],
