@@ -19,6 +19,10 @@ model User {
   username         String?   @unique
   canEditUsername  Boolean   @default(false)
   refCode          String    @unique
+  inviteCodeUsed   String?
+  signupPhase      String?
+  bonusPoints      Int       @default(0)
+  bonusReferralPoints Int    @default(0)
   accounts         Account[]
   sessions         Session[]
   wallets          Wallet[]

@@ -1,4 +1,5 @@
 ﻿import { LoginContent } from "@/components/auth/login-content"
+import { getSignupAccessStatus } from "@/lib/signup-policy"
 
 type LoginSearchParams = Record<string, string | string[] | undefined>
 
@@ -9,6 +10,7 @@ type LoginPageProps = {
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const resolvedParams = await searchParams
   const referral = typeof resolvedParams?.ref === "string" ? resolvedParams.ref : undefined
+  const accessInfo = await getSignupAccessStatus()
 
   return (
     <div className="min-h-[100svh] bg-black text-white">
@@ -20,11 +22,10 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               <p className="text-sm uppercase tracking-[0.4em] text-cyan-300">Ardra access</p>
               <h1 className="text-3xl font-semibold text-white">Sign in with Solana</h1>
             </div>
-            <LoginContent initialReferral={referral} />
+            <LoginContent initialReferral={referral} accessInfo={accessInfo} />
           </div>
         </div>
       </div>
     </div>
   )
 }
-

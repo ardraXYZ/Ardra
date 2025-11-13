@@ -7,6 +7,12 @@ import { verifyMessage } from "viem"
 import bs58 from "bs58"
 import nacl from "tweetnacl"
 import { prisma } from "@/lib/prisma"
+import {
+  INITIAL_CODE_BONUS,
+  REFERRAL_BONUS,
+  resolveInviteRequirement,
+  InviteGateError,
+} from "@/lib/signup-policy"
 import crypto from "node:crypto"
 import { validateNonce, markNonceUsed } from "@/lib/siwe-store"
 
@@ -22,15 +28,25 @@ async function ensureUserRefCode(userId: string) {
   return refCode
 }
 
-async function attachReferralIfAny(userId: string) {
-  const cookieStore = await nextCookies()
-  const ref = cookieStore.get("ardra_ref")?.value?.trim()
-  if (!ref) return
-  const referrer = await prisma.user.findFirst({ where: { refCode: ref } })
-  if (!referrer || referrer.id === userId) return
+async function readInviteCookie() {
+  try {
+    const cookieStore = await nextCookies()
+    const raw = cookieStore.get("ardra_ref")?.value
+    return raw ? raw.trim().toUpperCase() : null
+  } catch {
+    return null
+  }
+}
+
+async function attachReferralIfAny(userId: string, inviteCode?: string | null) {
+  const normalized = (inviteCode ?? (await readInviteCookie()) ?? "").trim().toUpperCase()
+  if (!normalized) return null
+  const referrer = await prisma.user.findFirst({ where: { refCode: normalized } })
+  if (!referrer || referrer.id === userId) return null
   const exists = await prisma.referral.findFirst({ where: { referredId: userId } })
-  if (exists) return
+  if (exists) return { referrerId: referrer.id, referrerRefCode: referrer.refCode }
   await prisma.referral.create({ data: { referrerId: referrer.id, referredId: userId } })
+  return { referrerId: referrer.id, referrerRefCode: referrer.refCode }
 }
 
 async function createLoginLog(userId: string | null, method: string, success: boolean) {
@@ -55,6 +71,7 @@ export const authOptions: NextAuthOptions = {
         signature: { label: "signature", type: "text" },
         nonce: { label: "nonce", type: "text" },
         chainId: { label: "chainId", type: "number" },
+        inviteCode: { label: "inviteCode", type: "text" },
       },
       async authorize(creds) {
         const address = (creds.address as string | undefined)?.toLowerCase()
@@ -85,14 +102,70 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Signature verification failed")
         }
         markNonceUsed(nonce)
+        const rawInviteInput = (creds.inviteCode as string | undefined) ?? ""
+        const inviteCodeInput = rawInviteInput.trim().toUpperCase()
+        const inviteCode = inviteCodeInput || (await readInviteCookie())
         let userId: string
         const wallet = await prisma.wallet.findUnique({ where: { address } })
         if (wallet) {
           userId = wallet.userId
         } else {
-          const user = await prisma.user.create({ data: { name: `${address.slice(0, 10)}...`, refCode: generateRefCode() } })
+          let inviteResolution
+          try {
+            inviteResolution = await resolveInviteRequirement({ inviteCode })
+          } catch (error) {
+            if (error instanceof InviteGateError) {
+              console.warn("[auth][credentials-evm]", "invite gate blocked signup", {
+                address,
+                inviteCode,
+                code: error.code,
+              })
+            } else {
+              console.error("[auth][credentials-evm]", "failed to resolve invite requirement", error)
+            }
+            throw error
+          }
+          const userData: Parameters<typeof prisma.user.create>[0]["data"] = {
+            name: `${address.slice(0, 10)}...`,
+            refCode: generateRefCode(),
+            inviteCodeUsed: inviteResolution.requirement === "none" ? null : inviteResolution.normalizedCode,
+            signupPhase: inviteResolution.phase,
+          }
+          if (inviteResolution.requirement === "initial-code") {
+            userData.bonusPoints = INITIAL_CODE_BONUS
+          } else if (inviteResolution.requirement === "referral" && inviteResolution.phase === "invite-only") {
+            userData.bonusPoints = INITIAL_CODE_BONUS
+          }
+          const user = await prisma.user.create({ data: userData })
           await prisma.wallet.create({ data: { userId: user.id, chain: "EVM", address, provider: "siwe" } })
-          await attachReferralIfAny(user.id)
+          if (inviteResolution.requirement === "referral") {
+            try {
+              await prisma.referral.create({
+                data: { referrerId: inviteResolution.referrerId, referredId: user.id },
+              })
+            } catch (error) {
+              console.warn("[auth][credentials-evm]", "failed to attach referral for invite signup", {
+                userId: user.id,
+                referrerId: inviteResolution.referrerId,
+                error,
+              })
+            }
+            if (inviteResolution.phase === "invite-only") {
+              try {
+                await prisma.user.update({
+                  where: { id: inviteResolution.referrerId },
+                  data: { bonusReferralPoints: { increment: REFERRAL_BONUS } },
+                })
+              } catch (error) {
+                console.warn("[auth][credentials-evm]", "failed to award referral bonus", {
+                  referrerId: inviteResolution.referrerId,
+                  error,
+                })
+              }
+            }
+          } else {
+            await attachReferralIfAny(user.id, inviteCode)
+          }
           userId = user.id
         }
         await createLoginLog(userId, "credentials-evm", true)
@@ -109,6 +182,7 @@ export const authOptions: NextAuthOptions = {
         message: { label: "message", type: "text" },
         signature: { label: "signature", type: "text" },
         nonce: { label: "nonce", type: "text" },
+        inviteCode: { label: "inviteCode", type: "text" },
       },
       async authorize(creds) {
         const address = (creds.address as string | undefined) ?? ""
@@ -145,12 +219,68 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Signature verification failed")
         }
         markNonceUsed(nonce)
-        let wallet = await prisma.wallet.findUnique({ where: { address } })
+        const rawInviteInput = (creds.inviteCode as string | undefined) ?? ""
+        const inviteCodeInput = rawInviteInput.trim().toUpperCase()
+        const inviteCode = inviteCodeInput || (await readInviteCookie())
+        const wallet = await prisma.wallet.findUnique({ where: { address } })
         let userId: string
         if (!wallet) {
-          const user = await prisma.user.create({ data: { name: `${address.slice(0, 10)}...`, refCode: generateRefCode() } })
+          let inviteResolution
+          try {
+            inviteResolution = await resolveInviteRequirement({ inviteCode })
+          } catch (error) {
+            if (error instanceof InviteGateError) {
+              console.warn("[auth][credentials-solana]", "invite gate blocked signup", {
+                address,
+                inviteCode,
+                code: error.code,
+              })
+            } else {
+              console.error("[auth][credentials-solana]", "failed to resolve invite requirement", error)
+            }
+            throw error
+          }
+          const userData: Parameters<typeof prisma.user.create>[0]["data"] = {
+            name: `${address.slice(0, 10)}...`,
+            refCode: generateRefCode(),
+            inviteCodeUsed: inviteResolution.requirement === "none" ? null : inviteResolution.normalizedCode,
+            signupPhase: inviteResolution.phase,
+          }
+          if (inviteResolution.requirement === "initial-code") {
+            userData.bonusPoints = INITIAL_CODE_BONUS
+          } else if (inviteResolution.requirement === "referral" && inviteResolution.phase === "invite-only") {
+            userData.bonusPoints = INITIAL_CODE_BONUS
+          }
+          const user = await prisma.user.create({ data: userData })
           await prisma.wallet.create({ data: { userId: user.id, chain: "SOLANA", address, provider: "siws" } })
-          await attachReferralIfAny(user.id)
+          if (inviteResolution.requirement === "referral") {
+            try {
+              await prisma.referral.create({
+                data: { referrerId: inviteResolution.referrerId, referredId: user.id },
+              })
+            } catch (error) {
+              console.warn("[auth][credentials-solana]", "failed to attach referral for invite signup", {
+                userId: user.id,
+                referrerId: inviteResolution.referrerId,
+                error,
+              })
+            }
+            if (inviteResolution.phase === "invite-only") {
+              try {
+                await prisma.user.update({
+                  where: { id: inviteResolution.referrerId },
+                  data: { bonusReferralPoints: { increment: REFERRAL_BONUS } },
+                })
+              } catch (error) {
+                console.warn("[auth][credentials-solana]", "failed to award referral bonus", {
+                  referrerId: inviteResolution.referrerId,
+                  error,
+                })
+              }
+            }
+          } else {
+            await attachReferralIfAny(user.id, inviteCode)
+          }
           userId = user.id
         } else {
           userId = wallet.userId

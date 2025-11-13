@@ -53,12 +53,14 @@ export function SolanaSignIn({ referralCode }: Props) {
       }
       const signature = bs58.encode(signatureBytes)
 
+      const inviteCode = referralCode?.trim().toUpperCase() ?? ""
       const res = await signIn("credentials-solana", {
         redirect: false,
         address,
         signature,
         message,
         nonce,
+        inviteCode,
       })
 
       if (res?.error) throw new Error(res.error)
