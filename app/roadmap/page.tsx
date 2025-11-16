@@ -160,61 +160,63 @@ export default function RoadmapPage() {
                   const isPhaseActive = index <= highestActiveIndex
 
                   const card = (
-                    <article
-                      tabIndex={0}
-                      className="relative rounded-2xl border border-white/10 bg-white/[0.02] p-5 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition duration-300 hover:-translate-y-1 hover:border-white/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400"
-                    >
-                      <div
-                        className={cn(
-                          "pointer-events-none absolute inset-x-4 top-0 h-px bg-gradient-to-r",
-                          statusCardGlow[phase.status]
-                        )}
-                        aria-hidden
-                      />
-
-                      <div className="mb-3 flex items-center gap-3 md:hidden">
+                    <div className="group/card relative rounded-2xl bg-gradient-to-r from-emerald-400/20 via-cyan-300/15 to-fuchsia-400/20 p-[1.5px] transition duration-300 hover:-translate-y-1 hover:from-emerald-400/35 hover:via-cyan-300/25 hover:to-fuchsia-400/35 focus-within:from-emerald-400/35 focus-within:via-cyan-300/25 focus-within:to-fuchsia-400/35">
+                      <article
+                        tabIndex={0}
+                        className="relative rounded-[calc(theme(borderRadius.2xl)-3px)] border border-white/25 bg-white/[0.02] p-5 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition duration-300 group-hover/card:border-transparent group-hover/card:shadow-[0_0_25px_rgba(34,211,238,0.25)] focus-visible:outline-none"
+                      >
                         <div
                           className={cn(
-                            "relative flex h-10 w-10 items-center justify-center rounded-full border-2 bg-[#05040f] font-orbitron text-[0.9rem] tracking-[0.2em]",
-                            statusDotColors[phase.status]
+                            "pointer-events-none absolute inset-x-4 top-0 h-px bg-gradient-to-r",
+                            statusCardGlow[phase.status]
                           )}
-                        >
-                          <span>{formattedIndex}</span>
-                        </div>
-                        <span
-                          className={cn(
-                            "rounded-full border px-3 py-0.5 text-[11px] uppercase tracking-[0.35em]",
-                            statusStyles[phase.status]
-                          )}
-                        >
-                          {statusCopy[phase.status]}
-                        </span>
-                      </div>
+                          aria-hidden
+                        />
 
-                      <div className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.35em] text-white/50">
-                        <span>{phase.period}</span>
-                        <span
-                          className={cn(
-                            "hidden rounded-full border px-3 py-0.5 md:inline-flex",
-                            statusStyles[phase.status]
-                          )}
-                        >
-                          {statusCopy[phase.status]}
-                        </span>
-                      </div>
-                      <h3 className="mt-4 font-orbitron text-xl text-white">{phase.phase}</h3>
-                      <p className="mt-2 text-sm text-white/70">{phase.summary}</p>
-                      <ul className="mt-4 space-y-2 text-sm text-white/80">
-                        {phase.milestones.map((milestone) => (
-                          <li key={milestone.title} className="flex gap-2">
-                            <span className="mt-1 h-1.5 w-1.5 rounded-full bg-gradient-to-r from-cyan-300 to-fuchsia-300 shadow-[0_0_8px_rgba(45,212,191,0.5)]" />
-                            <span>
-                              <span className="text-white">{milestone.title}</span>: {milestone.detail}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    </article>
+                        <div className="mb-3 flex items-center gap-3 md:hidden">
+                          <div
+                            className={cn(
+                              "relative flex h-10 w-10 items-center justify-center rounded-full border-2 bg-[#05040f] font-orbitron text-[0.9rem] tracking-[0.2em]",
+                              statusDotColors[phase.status]
+                            )}
+                          >
+                            <span>{formattedIndex}</span>
+                          </div>
+                          <span
+                            className={cn(
+                              "rounded-full border px-3 py-0.5 text-[11px] uppercase tracking-[0.35em]",
+                              statusStyles[phase.status]
+                            )}
+                          >
+                            {statusCopy[phase.status]}
+                          </span>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.35em] text-white/50">
+                          <span>{phase.period}</span>
+                          <span
+                            className={cn(
+                              "hidden rounded-full border px-3 py-0.5 md:inline-flex",
+                              statusStyles[phase.status]
+                            )}
+                          >
+                            {statusCopy[phase.status]}
+                          </span>
+                        </div>
+                        <h3 className="mt-4 font-orbitron text-xl text-white">{phase.phase}</h3>
+                        <p className="mt-2 text-sm text-white/70">{phase.summary}</p>
+                        <ul className="mt-4 space-y-2 text-sm text-white/80">
+                          {phase.milestones.map((milestone) => (
+                            <li key={milestone.title} className="flex gap-2">
+                              <span className="mt-1 h-1.5 w-1.5 rounded-full bg-gradient-to-r from-cyan-300 to-fuchsia-300 shadow-[0_0_8px_rgba(45,212,191,0.5)]" />
+                              <span>
+                                <span className="text-white">{milestone.title}</span>: {milestone.detail}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </article>
+                    </div>
                   )
 
                   const connectorColor = isPhaseActive
