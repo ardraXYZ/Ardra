@@ -31,7 +31,7 @@ const roadmapPhases: {
     period: "Q4 - 2025",
     status: "building",
     summary:
-      "Website 2.0, refreshed leaderboard and Telegram-based bot control go live, while aggressive marketing cycles and partner deals kick off this quarter.",
+      "Website 2.0, refreshed leaderboard and Telegram-based bot control go live, while aggressive marketing cycles and partner deals kick off this quarter, and the Ardra Points system launches to reward early adopters.",
     milestones: [
       { title: "Website 2.0", detail: "New design, improved storytelling and performance." },
       { title: "Telegram bot", detail: "Migrated automation flows from desktop to chat." },
