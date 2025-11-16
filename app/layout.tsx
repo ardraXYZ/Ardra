@@ -23,12 +23,34 @@ const orbitron = Orbitron({
   subsets: ["latin"],
 })
 
+const ogTitle = "Ardra Hub"
+const ogDescription = "Boost your PerpDEX farming."
+const ogImage = "/images/ArdraLogo.png"
+
 export const metadata: Metadata = {
-  title: "Ardra Hub",
-  description: "Ardra is the futuristic hub for airdrop farming bots on Perp DEX.",
+  title: ogTitle,
+  description: ogDescription,
   icons: {
     icon: [{ url: "/favicon.ico" }],
     shortcut: "/favicon.ico",
+  },
+  openGraph: {
+    title: ogTitle,
+    description: ogDescription,
+    images: [
+      {
+        url: ogImage,
+        width: 1200,
+        height: 630,
+        alt: "Ardra logo",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: ogTitle,
+    description: ogDescription,
+    images: [ogImage],
   },
 }
 

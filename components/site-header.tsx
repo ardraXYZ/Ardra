@@ -12,7 +12,7 @@ const navItems = [
   { href: "/bots", label: "Bots" },
   { href: "/leaderboard", label: "Leaderboard" },
   { href: "https://docs.ardra.xyz/", label: "Docs", external: true },
-  { href: "#", label: "Roadmap" },
+  { href: "/roadmap", label: "Roadmap" },
 ]
 
 export function SiteHeader({ className }: { className?: string }) {
