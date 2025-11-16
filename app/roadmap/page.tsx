@@ -14,7 +14,7 @@ const roadmapPhases: {
 }[] = [
   {
     id: "phase-1",
-    phase: "Phase 01 - Idea & MVP",
+    phase: "Phase 01",
     period: "Q3 - 2025",
     status: "live",
     summary:
@@ -27,7 +27,7 @@ const roadmapPhases: {
   },
   {
     id: "phase-2",
-    phase: "Phase 02 - Telegram relaunch",
+    phase: "Phase 02",
     period: "Q4 - 2025",
     status: "building",
     summary:
@@ -40,7 +40,7 @@ const roadmapPhases: {
   },
   {
     id: "phase-3",
-    phase: "Phase 03 - Web autopilot",
+    phase: "Phase 03",
     period: "Q1-Q2 - 2026",
     status: "planned",
     summary:
@@ -53,7 +53,7 @@ const roadmapPhases: {
   },
   {
     id: "phase-4",
-    phase: "Phase 04 - Network flywheel",
+    phase: "Phase 04",
     period: "Q3-Q4 - 2026",
     status: "planned",
     summary:
@@ -66,7 +66,7 @@ const roadmapPhases: {
   },
   {
     id: "phase-5",
-    phase: "Phase 05 - Autonomous network",
+    phase: "Phase 05",
     period: "2027+",
     status: "planned",
     summary:
