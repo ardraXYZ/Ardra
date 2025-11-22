@@ -15,7 +15,7 @@ const EXCHANGES: ExchangeLink[] = [
   { id: "backpack", name: "Backpack", url: "https://backpack.exchange/join/ardra" },
   { id: "avantis", name: "Avantis", url: "https://www.avantisfi.com/referral?code=ardra" },
   { id: "standx", name: "StandX", url: "https://standx.com/referral?code=Ardra" },
-  { id: "outkast", name: "Outkast", url: "https://www.outkast.xyz/?r=n99Vz" },
+  { id: "outkast", name: "Outkast", url: "https://go.outkast.xyz/yvtp/EXFLFUXN" },
 ]
 
 function formatCompact(n: number) {

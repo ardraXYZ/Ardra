@@ -16,7 +16,7 @@ const DEX_OPTIONS: DexOption[] = [
   { id: "backpack", name: "Backpack", url: "https://backpack.exchange/join/ardra", live: true },
   { id: "avantis", name: "Avantis", url: "https://www.avantisfi.com/referral?code=ardra" },
   { id: "standx", name: "StandX", url: "https://standx.com/referral?code=Ardra" },
-  { id: "outkast", name: "Outkast", url: "https://www.outkast.xyz/?r=n99Vz" },
+  { id: "outkast", name: "Outkast", url: "https://go.outkast.xyz/yvtp/EXFLFUXN" },
 ]
 
 export function PerpDexCta({ children, frameless = false }: { children?: React.ReactNode; frameless?: boolean }) {
@@ -33,7 +33,7 @@ export function PerpDexCta({ children, frameless = false }: { children?: React.R
         {/* Keep CTA top stroke visible so it meets the hero; hide only the bottom to let footer draw that seam */}
         <div className="frame-bottom-eraser" aria-hidden />
 
-          <div className="grid items-center gap-6 md:grid-cols-[1.1fr_1fr]">
+        <div className="grid items-center gap-6 md:grid-cols-[1.1fr_1fr]">
           {/* Left copy */}
           <div className="space-y-2">
             <h3 className="font-orbitron text-2xl md:text-3xl text-white text-glow">Start earning with Ardra</h3>

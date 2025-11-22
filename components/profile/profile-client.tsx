@@ -302,7 +302,7 @@ const FARMS: FarmEntry[] = [
 
     modes: ["solana"],
 
-    referral: { type: "link", url: "https://www.outkast.xyz/?r=n99Vz" },
+    referral: { type: "link", url: "https://go.outkast.xyz/yvtp/EXFLFUXN" },
 
   },
 
