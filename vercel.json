@@ -2,7 +2,7 @@
   "crons": [
     {
       "path": "/api/perp-snapshot",
-      "schedule": "0 16 * * *"
+      "schedule": "0 17 * * *"
     }
   ]
 }
