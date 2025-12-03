@@ -61,7 +61,7 @@ function matchProtocol(
     )
 }
 
-async function getMetricsFromDefillama(aliases: string[]): Promise<ExternalMetrics | null> {
+export async function getDefillamaMetrics(aliases: string[]): Promise<ExternalMetrics | null> {
     const overview = await fetchOverview()
     const protocol = matchProtocol(overview, aliases)
     if (!protocol) return null
@@ -72,31 +72,31 @@ async function getMetricsFromDefillama(aliases: string[]): Promise<ExternalMetri
 }
 
 export const getReya = () =>
-    getMetricsFromDefillama(["reya", "reya-dex", "reya-perps"])
+    getDefillamaMetrics(["reya", "reya-dex", "reya-perps"])
 
 export const getGains = () =>
-    getMetricsFromDefillama(["gains-network", "gtrade", "gains"])
+    getDefillamaMetrics(["gains-network", "gtrade", "gains"])
 
 export const getVest = () =>
-    getMetricsFromDefillama(["vest", "vest-exchange", "vest-markets"])
+    getDefillamaMetrics(["vest", "vest-exchange", "vest-markets"])
 
 export const getMyx = () =>
-    getMetricsFromDefillama(["myx-finance", "myx"])
+    getDefillamaMetrics(["myx-finance", "myx"])
 
 export const getHibachi = () =>
-    getMetricsFromDefillama(["hibachi"])
+    getDefillamaMetrics(["hibachi"])
 
 export const getEdgex = () =>
-    getMetricsFromDefillama(["edgex", "edgeX"])
+    getDefillamaMetrics(["edgex", "edgeX"])
 
 export const getDrift = () =>
-    getMetricsFromDefillama(["drift", "drift-trade"])
+    getDefillamaMetrics(["drift", "drift-trade"])
 
 export const getGrvt = () =>
-    getMetricsFromDefillama(["grvt", "grvt-perps"])
+    getDefillamaMetrics(["grvt", "grvt-perps"])
 
 export const getApexProtocol = () =>
-    getMetricsFromDefillama(["apex-protocol", "apex"])
+    getDefillamaMetrics(["apex-protocol", "apex"])
 
 export const getJupiter = () =>
-    getMetricsFromDefillama(["jupiter-perpetual-exchange", "jupiter"])
+    getDefillamaMetrics(["jupiter-perpetual-exchange", "jupiter"])

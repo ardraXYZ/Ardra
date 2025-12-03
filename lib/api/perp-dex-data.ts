@@ -12,7 +12,8 @@ import {
     getDrift as getDriftExternal,
     getGrvt,
     getApexProtocol,
-    getJupiter
+    getJupiter,
+    getDefillamaMetrics
 } from "./perp-dex-external"
 
 export type VariationStats = {
@@ -1354,6 +1355,18 @@ async function fetchGmxData(): Promise<PerpDexData | null> {
         }
 
         volume24h += await getChainVolume(chain)
+    }
+
+    if (totalOI <= 0 || volume24h <= 0) {
+        try {
+            const fallback = await getDefillamaMetrics(["gmx", "gmx-v2", "gmx-perps"])
+            if (fallback) {
+                if (fallback.dailyVolumeUsd > 0) volume24h = fallback.dailyVolumeUsd
+                if (fallback.openInterestUsd > 0) totalOI = fallback.openInterestUsd
+            }
+        } catch (error) {
+            console.warn("DefiLlama fallback for GMX failed", error)
+        }
     }
 
     if (totalOI === 0 && volume24h === 0) return null
