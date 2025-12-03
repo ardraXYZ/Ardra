@@ -16,9 +16,14 @@ type DefillamaOverview = {
 }
 
 const DEFILLAMA_OVERVIEW_URL = "https://api.llama.fi/overview/derivatives"
+const DEFILLAMA_OPEN_INTEREST_URL = "https://api.llama.fi/overview/open-interest?sector=perps"
 const DEFILLAMA_CACHE_TTL = 5 * 60 * 1000
 
 let overviewCache: { timestamp: number; data: DefillamaOverview | null } = {
+    timestamp: 0,
+    data: null
+}
+let oiOverviewCache: { timestamp: number; data: DefillamaOverview | null } = {
     timestamp: 0,
     data: null
 }
@@ -37,6 +42,24 @@ async function fetchOverview(): Promise<DefillamaOverview | null> {
         return json
     } catch (error) {
         console.error("Failed to fetch DefiLlama derivatives overview", error)
+        return null
+    }
+}
+
+async function fetchOpenInterestOverview(): Promise<DefillamaOverview | null> {
+    const now = Date.now()
+    if (oiOverviewCache.data && now - oiOverviewCache.timestamp < DEFILLAMA_CACHE_TTL) {
+        return oiOverviewCache.data
+    }
+
+    try {
+        const res = await fetch(DEFILLAMA_OPEN_INTEREST_URL, { cache: "no-store" })
+        if (!res.ok) return null
+        const json = (await res.json()) as DefillamaOverview
+        oiOverviewCache = { timestamp: now, data: json }
+        return json
+    } catch (error) {
+        console.error("Failed to fetch DefiLlama open interest overview", error)
         return null
     }
 }
@@ -62,12 +85,22 @@ function matchProtocol(
 }
 
 export async function getDefillamaMetrics(aliases: string[]): Promise<ExternalMetrics | null> {
-    const overview = await fetchOverview()
-    const protocol = matchProtocol(overview, aliases)
-    if (!protocol) return null
+    const [volumeOverview, oiOverview] = await Promise.all([fetchOverview(), fetchOpenInterestOverview()])
+    const volumeProtocol = matchProtocol(volumeOverview, aliases)
+    const oiProtocol = matchProtocol(oiOverview, aliases)
+    if (!volumeProtocol && !oiProtocol) return null
+
+    const volume = volumeProtocol?.total24h ?? 0
+    const openInterestCandidates = [
+        volumeProtocol?.openInterest,
+        oiProtocol?.total24h,
+        oiProtocol?.openInterest
+    ]
+    const openInterest = openInterestCandidates.find(value => typeof value === "number" && value > 0) ?? 0
+
     return {
-        dailyVolumeUsd: protocol.total24h ?? 0,
-        openInterestUsd: protocol.openInterest ?? 0
+        dailyVolumeUsd: volume,
+        openInterestUsd: openInterest
     }
 }
 
