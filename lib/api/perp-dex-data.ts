@@ -1289,7 +1289,8 @@ async function fetchGmxData(): Promise<PerpDexData | null> {
             rpcUrl: "https://arb1.arbitrum.io/rpc",
             oracleUrl: "https://arbitrum-api.gmxinfra.io",
             subsquidUrl: "https://gmx.squids.live/gmx-synthetics-arbitrum:prod/api/graphql",
-            chainId: 42161
+            chainId: 42161,
+            supportsVolume: true
         },
         {
             name: "Avalanche",
@@ -1297,15 +1298,18 @@ async function fetchGmxData(): Promise<PerpDexData | null> {
             rpcUrl: "https://api.avax.network/ext/bc/C/rpc",
             oracleUrl: "https://avalanche-api.gmxinfra.io",
             subsquidUrl: "https://gmx.squids.live/gmx-synthetics-avalanche:prod/api/graphql",
-            chainId: 43114
+            chainId: 43114,
+            supportsVolume: false
         }
     ]
 
     let totalOI = 0
     let pairs = 0
     let volume24h = 0
+    const hasPartialVolumeCoverage = chains.some(c => !c.supportsVolume)
 
     const getChainVolume = async (chain: typeof chains[number]): Promise<number> => {
+        if (!chain.supportsVolume) return 0
         try {
             const sdk = new GmxSdk({
                 chainId: chain.chainId,
@@ -1357,16 +1361,21 @@ async function fetchGmxData(): Promise<PerpDexData | null> {
         volume24h += await getChainVolume(chain)
     }
 
-    if (totalOI <= 0 || volume24h <= 0) {
-        try {
-            const fallback = await getDefillamaMetrics(["gmx", "gmx-v2", "gmx-perps"])
-            if (fallback) {
-                if (fallback.dailyVolumeUsd > 0) volume24h = fallback.dailyVolumeUsd
-                if (fallback.openInterestUsd > 0) totalOI = fallback.openInterestUsd
+    try {
+        const fallback = await getDefillamaMetrics(["gmx", "gmx-v2", "gmx-perps"])
+        if (fallback) {
+            const fallbackVolume = fallback.dailyVolumeUsd ?? 0
+            const fallbackOi = fallback.openInterestUsd ?? 0
+
+            if (fallbackVolume > 0 && (volume24h <= 0 || hasPartialVolumeCoverage)) {
+                volume24h = fallbackVolume
             }
-        } catch (error) {
-            console.warn("DefiLlama fallback for GMX failed", error)
+            if (fallbackOi > 0 && totalOI <= 0) {
+                totalOI = fallbackOi
+            }
         }
+    } catch (error) {
+        console.warn("DefiLlama fallback for GMX failed", error)
     }
 
     if (totalOI === 0 && volume24h === 0) return null
