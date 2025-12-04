@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 const navItems = [
-  { href: "/bots", label: "Bots" },
+  { href: "/tools", label: "Tools" },
   { href: "/leaderboard", label: "Leaderboard" },
   { href: "https://docs.ardra.xyz/", label: "Docs", external: true },
   { href: "/roadmap", label: "Roadmap" },
