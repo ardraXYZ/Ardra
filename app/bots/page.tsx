@@ -6,7 +6,9 @@ import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { ArrowUpRight, Flame, Gauge, Shield, Sparkles } from "lucide-react"
+import { ArrowUpRight, Flame, Gauge, Shield, Sparkles, Loader2 } from "lucide-react"
+import { useAuth } from "@/components/providers/auth-provider"
+import { LoginPrompt } from "@/components/auth/login-prompt"
 
 type BotStatus = "live"
 
@@ -72,6 +74,35 @@ const highlights = [
 
 
 export default function BotsIndexPage() {
+  const { user, loading } = useAuth()
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[100svh] items-center justify-center bg-[#05040f] text-white">
+        <div className="flex items-center gap-3 rounded-full border border-white/15 bg-white/5 px-5 py-3 text-sm text-white/70">
+          <Loader2 className="h-4 w-4 animate-spin text-cyan-300" />
+          Loading session...
+        </div>
+      </div>
+    )
+  }
+
+  if (!user) {
+    return (
+      <div className="relative min-h-[100svh] overflow-hidden bg-[#05040f] text-white">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.18),_transparent_55%),radial-gradient(circle_at_bottom,_rgba(139,92,246,0.16),_transparent_60%)]" />
+        <main className="relative mx-auto w-full max-w-3xl px-6 pb-24 pt-36">
+          <LoginPrompt
+            title="Sign in to access Ardra bots"
+            message="Connect your wallet or account to configure and launch bots. Once authenticated, all Telegram automations and presets become available."
+            redirect="/login?callbackUrl=%2Fbots"
+            cta="Sign in to continue"
+          />
+        </main>
+      </div>
+    )
+  }
+
   return (
     <div className="relative min-h-[100svh] overflow-hidden bg-[#05040f] text-white">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.18),_transparent_55%),radial-gradient(circle_at_bottom,_rgba(139,92,246,0.16),_transparent_60%)]" />
