@@ -63,7 +63,6 @@ export function ToolsShell() {
                         </h1>
                         <p className="text-base sm:text-lg text-white/75 leading-relaxed">
                             Launch bots, monitor perp liquidity on PerpMonitor, and soon run airdrop simulations with Calculators.
-                            Same Ardra visuals, ready for fast navigation.
                         </p>
                         <div className="flex flex-wrap items-center gap-3 text-sm text-white/70">
                             <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-1 backdrop-blur-md">
@@ -73,10 +72,6 @@ export function ToolsShell() {
                             <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-1 backdrop-blur-md">
                                 <ShieldCheck className="h-4 w-4 text-cyan-300" />
                                 Ardra experience
-                            </span>
-                            <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-1 backdrop-blur-md">
-                                <Sparkles className="h-4 w-4 text-fuchsia-300" />
-                                Smooth feedback
                             </span>
                         </div>
                     </div>
@@ -194,7 +189,6 @@ export function ToolsShell() {
                         <h2 className="text-2xl font-semibold text-white">Pick your next move</h2>
                         <p className="max-w-2xl text-sm sm:text-base text-white/72">
                             Spin up bots to generate volume, watch liquidity on PerpMonitor, or soon simulate airdrops in Calculators.
-                            Navigation keeps the same Ardra visuals and snappy feedback everywhere.
                         </p>
                     </div>
                     <div className="flex flex-wrap justify-end gap-2">
