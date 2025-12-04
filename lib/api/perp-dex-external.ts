@@ -18,6 +18,8 @@ type DefillamaOverview = {
 const DEFILLAMA_OVERVIEW_URL = "https://api.llama.fi/overview/derivatives"
 const DEFILLAMA_OPEN_INTEREST_URL = "https://api.llama.fi/overview/open-interest?sector=perps"
 const DEFILLAMA_CACHE_TTL = 5 * 60 * 1000
+const APEX_DASHBOARD_URL = "https://pro.apex.exchange/blog-api/dashboard"
+const REQUEST_TIMEOUT_MS = 10_000
 
 let overviewCache: { timestamp: number; data: DefillamaOverview | null } = {
     timestamp: 0,
@@ -128,8 +130,44 @@ export const getDrift = () =>
 export const getGrvt = () =>
     getDefillamaMetrics(["grvt", "grvt-perps"])
 
-export const getApexProtocol = () =>
-    getDefillamaMetrics(["apex-protocol", "apex"])
+async function fetchApexDashboard(): Promise<ExternalMetrics | null> {
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
+    try {
+        const res = await fetch(APEX_DASHBOARD_URL, { cache: "no-store", signal: controller.signal })
+        if (!res.ok) throw new Error(`ApeX dashboard returned ${res.status}`)
+        const json = await res.json()
+        const pairs = Array.isArray(json?.pairs) ? json.pairs : []
+        const parseNumber = (value: unknown): number => {
+            if (typeof value === "number") return value
+            if (typeof value === "string") {
+                const n = Number.parseFloat(value)
+                return Number.isFinite(n) ? n : 0
+            }
+            return 0
+        }
+        const volume24h = pairs.reduce((acc: number, pair: any) => acc + parseNumber(pair?.vol), 0)
+        const openInterest = parseNumber(json?.openInterest)
+        if (volume24h <= 0 && openInterest <= 0) return null
+        return {
+            dailyVolumeUsd: volume24h,
+            openInterestUsd: openInterest
+        }
+    } catch (error) {
+        console.error("Failed to fetch ApeX dashboard metrics", error)
+        return null
+    } finally {
+        clearTimeout(timeout)
+    }
+}
+
+export const getApexProtocol = async () => {
+    const native = await fetchApexDashboard()
+    if (native && (native.dailyVolumeUsd > 0 || native.openInterestUsd > 0)) {
+        return native
+    }
+    return getDefillamaMetrics(["apex-protocol", "apex", "apex-pro"])
+}
 
 export const getJupiter = () =>
     getDefillamaMetrics(["jupiter-perpetual-exchange", "jupiter"])
