@@ -34,11 +34,10 @@ const tools: ToolCard[] = [
     },
     {
         title: "Calculators",
-        description: "Airdrop and fee-rebate simulators for multiple Perp DEXs (coming soon).",
-        href: "/calculators",
+        description: "Airdrop and fee-rebate simulators, starting with Backpack projections.",
+        href: "/calculators/backpack",
         icon: <Calculator className="h-6 w-6" />,
-        badge: "Coming soon",
-        disabled: true
+        badge: "Live"
     }
 ]
 
