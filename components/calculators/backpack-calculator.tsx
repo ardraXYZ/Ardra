@@ -149,12 +149,14 @@ export function BackpackCalculator() {
                 </header>
 
                 <div className="rounded-2xl border border-white/10 bg-black/30 p-5 text-white shadow-inner">
-                    <p className="text-xs uppercase tracking-[0.35em] text-white/40">Your share</p>
-                    <p className="mt-2 text-4xl font-semibold text-cyan-200">{percent.format(results.share || 0)}</p>
+                    <p className="text-xs uppercase tracking-[0.35em] text-white/40">Estimated airdrop value</p>
+                    <p className="mt-2 text-4xl font-semibold text-cyan-200">{currency.format(Math.round(results.estimateUsd || 0))}</p>
                     <div className="mt-3 grid gap-3 text-sm text-white/70">
-                        <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-                            <span>Estimated airdrop value</span>
-                            <span className="font-semibold text-white">{currency.format(Math.round(results.estimateUsd || 0))}</span>
+                        <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/65">
+                            <span>Value per point</span>
+                            <span className="font-semibold text-white">
+                                {results.share > 0 ? currency.format(Math.round(results.poolUsd / TOTAL_SEASON_POINTS)) : "$0"}
+                            </span>
                         </div>
                         <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/65">
                             <span>Pool size ({values.allocation}% of FDV)</span>
