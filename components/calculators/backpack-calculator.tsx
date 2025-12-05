@@ -282,6 +282,17 @@ export function BackpackCalculator() {
                             <Download className="h-4 w-4" />
                             {downloading ? "Generating card..." : "Download projection card"}
                         </Button>
+
+                        <Button
+                            asChild
+                            variant="outline"
+                            className="flex w-full items-center justify-center gap-2 rounded-2xl border-white/20 bg-white/5 py-5 text-base font-medium text-cyan-100 transition hover:border-cyan-300/40 hover:text-white"
+                        >
+                            <a href="https://backpack.exchange/join/ardra" target="_blank" rel="noreferrer">
+                                Start on Backpack
+                                <ArrowRight className="h-4 w-4" />
+                            </a>
+                        </Button>
                     </div>
                 </section>
 
