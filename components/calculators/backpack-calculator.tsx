@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 const currency = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 })
+const currencyCents = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits: 2 })
 const percent = new Intl.NumberFormat("en-US", { maximumFractionDigits: 2, style: "percent" })
 
 const TOTAL_SEASON_POINTS = 423_770_000
@@ -155,7 +156,7 @@ export function BackpackCalculator() {
                         <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/65">
                             <span>Value per point</span>
                             <span className="font-semibold text-white">
-                                {results.share > 0 ? currency.format(Math.round(results.poolUsd / TOTAL_SEASON_POINTS)) : "$0"}
+                                {results.share > 0 ? currencyCents.format(results.poolUsd / TOTAL_SEASON_POINTS) : "$0.00"}
                             </span>
                         </div>
                         <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/65">
