@@ -7,28 +7,36 @@ import { ArrowRight, Info, RefreshCcw, Target } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 const currency = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 })
 const percent = new Intl.NumberFormat("en-US", { maximumFractionDigits: 2, style: "percent" })
 
 const TOTAL_SEASON_POINTS = 423_770_000
+const FDV_MULTIPLIER = {
+    million: 1_000_000,
+    billion: 1_000_000_000
+}
+type FdvUnit = keyof typeof FDV_MULTIPLIER
 
 const DEFAULT_STATE = {
     userPoints: 120_000,
-    fdvEstimate: 2_500_000_000,
+    fdvBase: 2.5,
+    fdvUnit: "billion" as FdvUnit,
     allocation: 6
 }
 
 export function BackpackCalculator() {
     const [values, setValues] = useState(DEFAULT_STATE)
 
-    const handleChange = (key: keyof typeof DEFAULT_STATE, val: number) => {
+    const handleChange = (key: "userPoints" | "fdvBase" | "allocation", val: number) => {
         setValues(prev => ({ ...prev, [key]: Number.isFinite(val) ? Math.max(val, 0) : 0 }))
     }
 
     const results = useMemo(() => {
         const share = Math.min(values.userPoints / TOTAL_SEASON_POINTS, 1)
-        const poolUsd = values.fdvEstimate * (values.allocation / 100)
+        const fdv = values.fdvBase * FDV_MULTIPLIER[values.fdvUnit]
+        const poolUsd = fdv * (values.allocation / 100)
         const estimateUsd = share * poolUsd
         return {
             share,
@@ -65,14 +73,34 @@ export function BackpackCalculator() {
                         />
                     </FormRow>
 
-                    <FormRow label="Estimated FDV (USD)">
-                        <Input
-                            type="number"
-                            inputMode="decimal"
-                            value={values.fdvEstimate}
-                            onChange={event => handleChange("fdvEstimate", Number(event.target.value))}
-                            className="bg-black/40"
-                        />
+                    <FormRow label="Estimated FDV">
+                        <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
+                            <Input
+                                type="number"
+                                step="0.1"
+                                inputMode="decimal"
+                                value={values.fdvBase}
+                                onChange={event => handleChange("fdvBase", Number(event.target.value))}
+                                className="bg-black/40"
+                            />
+                            <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 p-1">
+                                {(["million", "billion"] as FdvUnit[]).map(unit => (
+                                    <button
+                                        key={unit}
+                                        className={cn(
+                                            "flex-1 rounded-xl px-4 py-2 text-sm capitalize transition",
+                                            values.fdvUnit === unit
+                                                ? "bg-cyan-400 text-black"
+                                                : "text-white/70 hover:text-white"
+                                        )}
+                                        onClick={() => setValues(prev => ({ ...prev, fdvUnit: unit }))}
+                                        type="button"
+                                    >
+                                        {unit}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
                     </FormRow>
 
                     <FormRow label="Airdrop allocation">
@@ -80,7 +108,7 @@ export function BackpackCalculator() {
                             <input
                                 type="range"
                                 min={1}
-                                max={20}
+                                max={100}
                                 step={0.5}
                                 value={values.allocation}
                                 onChange={event => handleChange("allocation", Number(event.target.value))}

@@ -39,9 +39,9 @@ export default function BackpackCalculatorPage() {
                     <div className="space-y-4">
                         <h1 className="font-orbitron text-3xl sm:text-4xl md:text-5xl">Estimate your Backpack airdrop score</h1>
                     <p className="max-w-3xl text-base text-white/70">
-                        Inspired by the Backbot experience, the Ardra calculator asks for the same inputs used by Backpack contributors:
-                        your current points, the fully diluted valuation you expect for the token, and what percentage of that FDV you believe
-                        will be used for the airdrop. Season 4 totals 423.77M points.
+                        Inspired by the Backbot calculator, the Ardra version lets you type “1” and choose “billion” or “million” to build the
+                        FDV, then pick the airdrop percentage (up to 100%). Combine that with your current points to see a quick estimate for
+                        Season 4’s 423.77M total supply.
                     </p>
                     </div>
                 </section>
