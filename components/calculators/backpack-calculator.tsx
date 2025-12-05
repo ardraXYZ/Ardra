@@ -70,7 +70,7 @@ export function BackpackCalculator() {
                             inputMode="decimal"
                             value={values.userPoints}
                             onChange={event => handleChange("userPoints", Number(event.target.value))}
-                            className="bg-black/40"
+                            className="h-14 rounded-2xl border-white/15 bg-black/40 text-lg text-white"
                         />
                     </FormRow>
 
@@ -82,14 +82,14 @@ export function BackpackCalculator() {
                                 inputMode="decimal"
                                 value={values.fdvBase}
                                 onChange={event => handleChange("fdvBase", Number(event.target.value))}
-                                className="bg-black/40"
+                                className="h-14 rounded-2xl border-white/15 bg-black/40 text-lg text-white"
                             />
-                            <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 p-1">
+                            <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 p-1.5">
                                 {(["million", "billion"] as FdvUnit[]).map(unit => (
                                     <button
                                         key={unit}
                                         className={cn(
-                                            "flex-1 rounded-xl px-4 py-2 text-sm capitalize transition",
+                                            "flex-1 rounded-xl px-4 py-3 text-base capitalize transition",
                                             values.fdvUnit === unit
                                                 ? "bg-cyan-400 text-black"
                                                 : "text-white/70 hover:text-white"
@@ -105,7 +105,7 @@ export function BackpackCalculator() {
                     </FormRow>
 
                     <FormRow label="Airdrop allocation">
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-4">
                             <input
                                 type="range"
                                 min={1}
@@ -113,9 +113,9 @@ export function BackpackCalculator() {
                                 step={0.5}
                                 value={values.allocation}
                                 onChange={event => handleChange("allocation", Number(event.target.value))}
-                                className="h-1 flex-1 cursor-pointer accent-cyan-300"
+                                className="h-2 flex-1 cursor-pointer accent-cyan-300"
                             />
-                            <span className="w-16 text-right text-sm text-white/80">{values.allocation}%</span>
+                            <span className="w-16 text-right text-lg font-semibold text-white/90">{values.allocation}%</span>
                         </div>
                     </FormRow>
 
@@ -192,7 +192,7 @@ function FormRow({ label, description, children }: FormRowProps) {
     return (
         <div className="space-y-2">
             <div>
-                <Label className="text-sm text-white">{label}</Label>
+                <Label className="text-base font-semibold text-white">{label}</Label>
                 {description ? <p className="text-xs text-white/50">{description}</p> : null}
             </div>
             {children}

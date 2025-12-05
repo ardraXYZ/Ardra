@@ -2,6 +2,7 @@ import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import { BackpackCalculator } from "@/components/calculators/backpack-calculator"
 import { Badge } from "@/components/ui/badge"
+import { Sparkles, SlidersHorizontal, UserPlus2 } from "lucide-react"
 
 export const metadata = {
     title: "Backpack Calculator | Ardra",
@@ -11,15 +12,18 @@ export const metadata = {
 const highlights = [
     {
         title: "Product-grade presets",
-        body: "We use the same guardrails from the Telegram bot so you can mirror real orders before executing."
+        body: "We use the same guardrails from the Telegram bot so you can mirror real orders before executing.",
+        icon: <Sparkles className="h-7 w-7" />
     },
     {
         title: "Referral ready",
-        body: "Model how many friends you need to invite to jump from Pulse tier to Nova."
+        body: "Model how many friends you need to invite to jump from Pulse tier to Nova.",
+        icon: <UserPlus2 className="h-7 w-7" />
     },
     {
         title: "Key metrics visualized",
-        body: "Volume, maker share, liquidity and referrals contribute to the score card in one place."
+        body: "Volume, maker share, liquidity and referrals contribute to the score card in one place.",
+        icon: <SlidersHorizontal className="h-7 w-7" />
     }
 ]
 
@@ -48,11 +52,20 @@ export default function BackpackCalculatorPage() {
 
                 <BackpackCalculator />
 
-                <section className="mt-14 grid gap-4 md:grid-cols-3">
+                <section className="mt-16 grid gap-6 md:grid-cols-3">
                     {highlights.map(item => (
-                        <div key={item.title} className="rounded-3xl border border-white/10 bg-white/[0.04] p-6 text-sm text-white/70 backdrop-blur">
-                            <p className="text-sm font-semibold text-white">{item.title}</p>
-                            <p className="mt-2 text-xs text-white/60">{item.body}</p>
+                        <div
+                            key={item.title}
+                            className="relative overflow-hidden rounded-[30px] border border-white/15 bg-white/[0.06] p-7 shadow-[0_25px_120px_rgba(56,189,248,0.15)] backdrop-blur"
+                        >
+                            <div className="absolute -inset-8 -z-10 bg-[radial-gradient(circle_at_20%_20%,rgba(56,189,248,0.18),transparent_40%),radial-gradient(circle_at_80%_30%,rgba(236,72,153,0.15),transparent_45%)] opacity-60" />
+                            <div className="flex items-center gap-3 text-white">
+                                <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/15 bg-black/40">
+                                    {item.icon}
+                                </div>
+                                <p className="text-lg font-semibold">{item.title}</p>
+                            </div>
+                            <p className="mt-4 text-sm text-white/70">{item.body}</p>
                         </div>
                     ))}
                 </section>
