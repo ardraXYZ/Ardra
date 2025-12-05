@@ -38,11 +38,11 @@ export default function BackpackCalculatorPage() {
                     <Badge className="border-cyan-300/40 bg-cyan-500/15 text-cyan-100">Backpack Simulator</Badge>
                     <div className="space-y-4">
                         <h1 className="font-orbitron text-3xl sm:text-4xl md:text-5xl">Estimate your Backpack airdrop score</h1>
-                        <p className="max-w-3xl text-base text-white/70">
-                            Inspired by the Backpack bot calculator, this version lives inside Ardra. Plug in your daily flow, maker share,
-                            referrals and staked liquidity to visualize how close you are to top tiers. The formula is illustrative only — you
-                            should always verify with official Backpack data.
-                        </p>
+                    <p className="max-w-3xl text-base text-white/70">
+                        Inspired by the Backbot experience, the Ardra calculator asks for the same inputs used by Backpack contributors:
+                        your current points, the fully diluted valuation you expect for the token, and what percentage of that FDV you believe
+                        will be used for the airdrop. Season 4 totals 423.77M points.
+                    </p>
                     </div>
                 </section>
 
