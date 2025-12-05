@@ -1,8 +1,9 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import Image from "next/image"
 import { motion } from "framer-motion"
-import { ArrowRight, Info, RefreshCcw, Target } from "lucide-react"
+import { ArrowRight, Info, RefreshCcw } from "lucide-react"
 
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -39,7 +40,7 @@ export function BackpackCalculator() {
         const fdv = values.fdvBase * FDV_MULTIPLIER[values.fdvUnit]
         const poolUsd = fdv * (values.allocation / 100)
         const estimateUsd = share * poolUsd
-        const madLadsPerNft = poolUsd * 0.01 / 10_000
+        const madLadsPerNft = (fdv * 0.01) / 10_000
         return {
             share,
             poolUsd,
@@ -152,7 +153,13 @@ export function BackpackCalculator() {
                 </header>
 
                 <div className="rounded-2xl border border-white/10 bg-black/30 p-5 text-white shadow-inner">
-                    <p className="text-xs uppercase tracking-[0.35em] text-white/40">Estimated airdrop value</p>
+                    <div className="mb-3 flex items-center gap-3">
+                        <Image src="/images/support/Backpack.png" alt="Backpack" width={48} height={48} className="h-12 w-12 rounded-full object-cover" />
+                        <div>
+                            <p className="text-xs uppercase tracking-[0.35em] text-white/40">Estimated airdrop value</p>
+                            <p className="text-sm text-white/60">Share based on your Backpack points</p>
+                        </div>
+                    </div>
                     <p className="mt-2 text-4xl font-semibold text-cyan-200">{currency.format(Math.round(results.estimateUsd || 0))}</p>
                     <div className="mt-3 grid gap-3 text-sm text-white/70">
                         <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/65">
@@ -182,15 +189,18 @@ export function BackpackCalculator() {
 
                 <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-5">
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                            <p className="text-xs uppercase tracking-[0.35em] text-white/40">Mad Lads (not confirmed)</p>
-                            <p className="mt-1 text-lg text-white">
-                                1 Mad Lads ≈{" "}
-                                <span className="font-semibold text-emerald-300">
-                                    {currency.format(Math.round(results.madLadsPerNft || 0))}
-                                </span>
-                            </p>
-                            <p className="text-xs text-white/50">Assuming 1% of the pool split across ~10,000 NFTs.</p>
+                        <div className="flex items-center gap-3">
+                            <Image src="/images/support/MadLads.png" alt="Mad Lads" width={56} height={56} className="h-14 w-14 rounded-full object-cover" />
+                            <div>
+                                <p className="text-xs uppercase tracking-[0.35em] text-white/40">Mad Lads (not confirmed)</p>
+                                <p className="mt-1 text-lg text-white">
+                                    1 Mad Lads ≈{" "}
+                                    <span className="font-semibold text-emerald-300">
+                                        {currency.format(Math.round(results.madLadsPerNft || 0))}
+                                    </span>
+                                </p>
+                                <p className="text-xs text-white/50">Assuming FDV × 1% divided across ~10,000 NFTs.</p>
+                            </div>
                         </div>
                         <Button
                             asChild
