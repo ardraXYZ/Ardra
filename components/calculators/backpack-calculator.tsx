@@ -39,10 +39,12 @@ export function BackpackCalculator() {
         const fdv = values.fdvBase * FDV_MULTIPLIER[values.fdvUnit]
         const poolUsd = fdv * (values.allocation / 100)
         const estimateUsd = share * poolUsd
+        const madLadsPerNft = poolUsd * 0.01 / 10_000
         return {
             share,
             poolUsd,
-            estimateUsd
+            estimateUsd,
+            madLadsPerNft
         }
     }, [values])
 
@@ -176,6 +178,30 @@ export function BackpackCalculator() {
                         <li>USD value = FDV × allocation% × (your points / season points).</li>
                         <li>Numbers are illustrative. Always compare with the official Backpack docs and announcements.</li>
                     </ul>
+                </div>
+
+                <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-5">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <p className="text-xs uppercase tracking-[0.35em] text-white/40">Mad Lads (not confirmed)</p>
+                            <p className="mt-1 text-lg text-white">
+                                1 Mad Lads ≈{" "}
+                                <span className="font-semibold text-emerald-300">
+                                    {currency.format(Math.round(results.madLadsPerNft || 0))}
+                                </span>
+                            </p>
+                            <p className="text-xs text-white/50">Assuming 1% of the pool split across ~10,000 NFTs.</p>
+                        </div>
+                        <Button
+                            asChild
+                            variant="ghost"
+                            className="rounded-full border border-white/20 bg-black/40 px-5 py-2 text-white hover:border-cyan-300/40 hover:text-cyan-50"
+                        >
+                            <a href="https://magiceden.io/marketplace/mad_lads" target="_blank" rel="noreferrer">
+                                Buy on Magic Eden
+                            </a>
+                        </Button>
+                    </div>
                 </div>
             </motion.div>
         </div>
