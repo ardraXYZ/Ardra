@@ -190,7 +190,14 @@ export function BackpackCalculator() {
                 <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-5">
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div className="flex items-center gap-3">
-                            <Image src="/images/support/MadLads.png" alt="Mad Lads" width={56} height={56} className="h-14 w-14 rounded-full object-cover" />
+                            <Image
+                                src="https://img-cdn.magiceden.dev/rs:fill:400:0:0/plain/https%3A%2F%2Fcreator-hub-prod.s3.us-east-2.amazonaws.com%2Fmad_lads_pfp_1682211343777.png"
+                                alt="Mad Lads"
+                                width={56}
+                                height={56}
+                                className="h-14 w-14 rounded-full object-cover"
+                                unoptimized
+                            />
                             <div>
                                 <p className="text-xs uppercase tracking-[0.35em] text-white/40">Mad Lads (not confirmed)</p>
                                 <p className="mt-1 text-lg text-white">
