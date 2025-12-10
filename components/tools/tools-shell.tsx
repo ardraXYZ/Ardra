@@ -8,6 +8,64 @@ import { ArrowUpRight, Bot, ChartBar, Calculator, Sparkles, ShieldCheck, Gauge }
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
+// Animated icon wrapper with gradient and glow effects
+function AnimatedIcon({
+    children,
+    gradientFrom,
+    gradientTo,
+    glowColor
+}: {
+    children: ReactNode
+    gradientFrom: string
+    gradientTo: string
+    glowColor: string
+}) {
+    return (
+        <motion.div
+            className="relative"
+            whileHover={{ scale: 1.1, rotate: 5 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+        >
+            {/* Glow effect */}
+            <div
+                className={cn(
+                    "absolute inset-0 rounded-full blur-xl opacity-60 transition-opacity group-hover:opacity-100",
+                    glowColor
+                )}
+            />
+            {/* Icon container with gradient */}
+            <div
+                className={cn(
+                    "relative flex h-12 w-12 items-center justify-center rounded-2xl",
+                    "bg-gradient-to-br shadow-lg",
+                    gradientFrom,
+                    gradientTo
+                )}
+            >
+                {/* Inner glow */}
+                <div className="absolute inset-[1px] rounded-2xl bg-gradient-to-br from-white/20 to-transparent" />
+                {/* Animated pulse ring */}
+                <motion.div
+                    className="absolute inset-0 rounded-2xl border border-white/30"
+                    animate={{
+                        scale: [1, 1.1, 1],
+                        opacity: [0.5, 0, 0.5]
+                    }}
+                    transition={{
+                        duration: 2.5,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                    }}
+                />
+                {/* Icon */}
+                <div className="relative z-10 text-white drop-shadow-lg">
+                    {children}
+                </div>
+            </div>
+        </motion.div>
+    )
+}
+
 type ToolCard = {
     title: string
     description: string
@@ -22,21 +80,45 @@ const tools: ToolCard[] = [
         title: "Bots",
         description: "Launch Ardra bots with safe defaults, live controls and audit-friendly telemetry.",
         href: "/bots",
-        icon: <Bot className="h-6 w-6" />,
+        icon: (
+            <AnimatedIcon
+                gradientFrom="from-violet-500"
+                gradientTo="to-fuchsia-500"
+                glowColor="bg-violet-500/40"
+            >
+                <Bot className="h-6 w-6" />
+            </AnimatedIcon>
+        ),
         badge: "Live"
     },
     {
         title: "PerpMonitor",
         description: "Real-time volume and open interest leaderboard across top perpetual venues.",
         href: "/PerpMonitor",
-        icon: <ChartBar className="h-6 w-6" />,
+        icon: (
+            <AnimatedIcon
+                gradientFrom="from-cyan-500"
+                gradientTo="to-blue-500"
+                glowColor="bg-cyan-500/40"
+            >
+                <ChartBar className="h-6 w-6" />
+            </AnimatedIcon>
+        ),
         badge: "Live"
     },
     {
         title: "Calculators",
-        description: "Airdrop and fee-rebate simulators, starting with Backpack projections.",
-        href: "/calculators/backpack",
-        icon: <Calculator className="h-6 w-6" />,
+        description: "Airdrop and fee-rebate simulators (Backpack, Aster).",
+        href: "/calculators",
+        icon: (
+            <AnimatedIcon
+                gradientFrom="from-emerald-500"
+                gradientTo="to-teal-500"
+                glowColor="bg-emerald-500/40"
+            >
+                <Calculator className="h-6 w-6" />
+            </AnimatedIcon>
+        ),
         badge: "Live"
     }
 ]
@@ -103,18 +185,16 @@ export function ToolsShell() {
                 {tools.map(tool => {
                     const CardContent = (
                         <div
-                        className={cn(
-                            "group relative h-full overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur transition",
-                            "hover:-translate-y-1 hover:border-cyan-300/30 hover:bg-white/[0.08] hover:shadow-[0_24px_80px_rgba(56,189,248,0.12)]",
-                            "before:absolute before:inset-0 before:-z-10 before:opacity-0 before:transition before:duration-300 before:bg-[radial-gradient(circle_at_20%_20%,rgba(56,189,248,0.12),transparent_40%),radial-gradient(circle_at_80%_30%,rgba(236,72,153,0.12),transparent_45%)] group-hover:before:opacity-100",
-                            tool.disabled && "opacity-70 hover:translate-y-0 hover:shadow-none"
-                        )}
-                    >
+                            className={cn(
+                                "group relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur transition",
+                                "hover:-translate-y-1 hover:border-cyan-300/30 hover:bg-white/[0.08] hover:shadow-[0_24px_80px_rgba(56,189,248,0.12)]",
+                                "before:absolute before:inset-0 before:-z-10 before:opacity-0 before:transition before:duration-300 before:bg-[radial-gradient(circle_at_20%_20%,rgba(56,189,248,0.12),transparent_40%),radial-gradient(circle_at_80%_30%,rgba(236,72,153,0.12),transparent_45%)] group-hover:before:opacity-100",
+                                tool.disabled && "opacity-70 hover:translate-y-0 hover:shadow-none"
+                            )}
+                        >
                             <div className="flex items-start justify-between">
-                                <div className="flex items-center gap-3">
-                                    <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-cyan-200">
-                                        {tool.icon}
-                                    </div>
+                                <div className="flex items-center gap-4">
+                                    {tool.icon}
                                     <div>
                                         <h3 className="text-lg font-semibold text-white">{tool.title}</h3>
                                         <p className="text-sm text-white/65">{tool.description}</p>
@@ -133,7 +213,7 @@ export function ToolsShell() {
                                     </span>
                                 )}
                             </div>
-                            <div className="mt-6 flex items-center gap-3 text-sm font-semibold text-cyan-200">
+                            <div className="mt-auto flex items-center gap-3 pt-6 text-sm font-semibold text-cyan-200">
                                 {tool.disabled ? (
                                     <span className="flex items-center gap-2 text-white/50">
                                         <Sparkles className="h-4 w-4" />

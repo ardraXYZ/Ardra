@@ -49,6 +49,7 @@ export function BackpackCalculator() {
         const valuePerPoint = poolUsd / TOTAL_SEASON_POINTS
         return {
             share,
+            fdv,
             poolUsd,
             estimateUsd,
             madLadsPerNft,
@@ -64,7 +65,10 @@ export function BackpackCalculator() {
             const dataUrl = await toPng(shareCardRef.current, {
                 cacheBust: true,
                 pixelRatio: 2,
-                backgroundColor: "#05030b"
+                backgroundColor: "#05030b",
+                filter: (node) => {
+                    return !(node instanceof HTMLElement && node.hasAttribute("data-html2canvas-ignore"))
+                }
             })
             const link = document.createElement("a")
             link.download = `ardra-backpack-estimate-${Date.now()}.png`
@@ -184,115 +188,90 @@ export function BackpackCalculator() {
                     <div className="space-y-4">
                         <div
                             ref={shareCardRef}
-                            className="group relative flex aspect-[16/9] w-full flex-col justify-between overflow-hidden rounded-[40px] border border-white/10 bg-[#05030b] px-8 py-8 text-white shadow-[0_40px_100px_-20px_rgba(0,0,0,0.7)] min-h-[420px] transition-all duration-500 hover:border-cyan-300/20 hover:shadow-[0_50px_120px_-15px_rgba(8,189,248,0.15)]"
-                            style={{
-                                backgroundImage:
-                                    "linear-gradient(135deg, rgba(5,4,22,0.72), rgba(5,18,45,0.62)), radial-gradient(circle at 20% 20%, rgba(255,255,255,0.12), transparent 45%), radial-gradient(circle at 80% 25%, rgba(0,200,255,0.18), transparent 50%), url(/images/tools/calculator.webp)",
-                                backgroundSize: "cover, cover, cover, cover",
-                                backgroundPosition: "center, center, center, center",
-                                backgroundRepeat: "no-repeat"
-                            }}
+                            className="group relative mx-auto max-w-xl overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#0E1526]/70 to-[#07090F]/60 p-5"
                         >
-                            {/* Background Elements */}
-                            <div className="absolute inset-0 -z-10">
-                                <Image
-                                    src="/images/tools/calculator.webp"
-                                    alt="card background"
-                                    fill
-                                    sizes="100vw"
-                                    priority
-                                    className="object-cover opacity-40 mix-blend-overlay"
-                                />
-                                {/* Ardra Gradient Background */}
-                                <div className="absolute inset-0 bg-gradient-to-br from-cyan-950/50 via-fuchsia-950/30 to-emerald-950/50" />
-                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_0%_0%,rgba(34,211,238,0.15),transparent_50%),radial-gradient(circle_at_100%_100%,rgba(16,185,129,0.15),transparent_50%)]" />
+                            {/* Background image */}
+                            {/* Pepe mascot background image */}
+                            <div
+                                aria-hidden
+                                className="pointer-events-none absolute inset-0 hidden bg-[url('/images/aster-pepe-bg.webp')] bg-cover bg-right opacity-20 md:block"
+                            />
 
-                                {/* Gradient Border Effect */}
-                                <div className="absolute inset-[1px] rounded-[39px] border border-white/5 bg-gradient-to-br from-cyan-500/10 via-fuchsia-500/5 to-emerald-500/10 opacity-50" />
-                            </div>
-
-                            {/* Header */}
-                            <div className="relative flex items-start justify-between gap-4">
-                                <div className="flex items-center gap-4">
-                                    {/* Logo without container */}
-                                    <Image
-                                        src="/images/support/Backpack.png"
-                                        alt="Backpack exchange"
-                                        width={160}
-                                        height={160}
-                                        className="h-10 w-auto object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.15)]"
-                                    />
-                                    <div>
-                                        <div className="flex items-center gap-2">
-                                            <span className="rounded-full bg-cyan-400/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-cyan-300 border border-cyan-400/20">
-                                                Airdrop
-                                            </span>
+                            <div className="relative space-y-4">
+                                {/* Header - Your allocation */}
+                                <div>
+                                    <p className="text-sm text-white/70">Your allocation</p>
+                                    <div className="mt-1 flex items-center gap-2">
+                                        <Image
+                                            src="/images/backpacklo.png"
+                                            alt="Backpack Logo"
+                                            width={32}
+                                            height={32}
+                                            className="h-8 w-8 rounded-full bg-white/5 object-contain p-1 ring-1 ring-white/10"
+                                            unoptimized
+                                            priority
+                                        />
+                                        <div className="font-orbitron font-normal text-3xl md:text-4xl">
+                                            <span>{new Intl.NumberFormat("en-US").format(values.userPoints)}</span>
+                                            <span className="ml-2 align-middle text-xl text-white/70 md:text-2xl">POINTS</span>
                                         </div>
-                                        <p className="text-sm font-medium text-white/50">Estimated Value Projection</p>
                                     </div>
                                 </div>
-                                <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-400 shadow-[0_0_20px_-5px_rgba(52,211,153,0.3)] backdrop-blur-md">
-                                    Live Estimate
-                                </div>
-                            </div>
 
-                            {/* Main Value */}
-                            <div className="relative py-2">
-                                <p className="mb-1 text-[11px] font-bold uppercase tracking-[0.3em] text-white/40">
-                                    Your Projected Allocation
-                                </p>
-                                <div className="flex items-baseline gap-1">
-                                    <span className="text-5xl font-bold tracking-tight text-white drop-shadow-[0_0_30px_rgba(34,211,238,0.3)] md:text-6xl">
+                                {/* USD Value - Neon green */}
+                                <div>
+                                    <p className="font-orbitron font-normal text-4xl text-[#31F8A5] drop-shadow-[0_0_10px_rgba(49,248,165,0.5),0_0_30px_rgba(42,127,255,0.35)] md:text-5xl">
                                         {currency.format(Math.round(results.estimateUsd || 0))}
-                                    </span>
+                                    </p>
                                 </div>
-                            </div>
 
-                            {/* Stats Grid */}
-                            <div className="relative grid grid-cols-1 gap-3 md:grid-cols-3">
-                                <ShareStat
-                                    label="Value / Point"
-                                    value={results.valuePerPoint > 0 ? currencyCents.format(results.valuePerPoint) : "$0.00"}
-                                />
-                                <ShareStat
-                                    label="Pool Size"
-                                    helper={`${values.allocation}% of FDV`}
-                                    value={currency.format(Math.round(results.poolUsd || 0))}
-                                />
-                                <ShareStat
-                                    label="My Points"
-                                    helper="Your current total"
-                                    value={new Intl.NumberFormat("en-US").format(values.userPoints)}
-                                />
-                            </div>
+                                {/* Stats grid - 3 columns */}
+                                <div className="grid grid-cols-3 gap-4 pt-1">
+                                    <div>
+                                        <div className="text-xs text-white/55">Estimated FDV</div>
+                                        <div className="text-sm font-bold">
+                                            {currency.format(results.fdv)}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div className="text-xs text-white/55">My Points</div>
+                                        <div className="text-sm font-bold">
+                                            {new Intl.NumberFormat("en-US").format(values.userPoints)}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div className="text-xs text-white/55">Value / Point</div>
+                                        <div className="text-sm font-bold">
+                                            {results.valuePerPoint > 0 ? currencyCents.format(results.valuePerPoint) : "$0.00"}
+                                        </div>
+                                    </div>
+                                </div>
 
-                            {/* Footer */}
-                            <div className="relative mt-2 flex justify-end pt-2">
-                                <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-white/80 backdrop-blur-sm transition group-hover:border-cyan-300/50 group-hover:text-cyan-100">
-                                    Generated by @ArdraHub
-                                </span>
+                                {/* Formula */}
+                                <div className="text-xs text-white/50">
+                                    Formula: FDV × {values.allocation}% × (My Points / {new Intl.NumberFormat("en-US").format(TOTAL_SEASON_POINTS)} total)
+                                </div>
+
+                                {/* Credit */}
+                                <div className="text-xs text-white/60">
+                                    by: ArdraHub
+                                </div>
+
+                                {/* Download button */}
+                                <div className="pt-2" data-html2canvas-ignore="true">
+                                    <Button
+                                        onClick={handleDownloadCard}
+                                        disabled={downloading}
+                                        className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400 px-4 py-2.5 text-sm font-semibold text-black shadow-[0_12px_32px_rgba(34,211,238,0.35)] transition-all hover:from-cyan-300 hover:via-sky-300 hover:to-emerald-300 hover:shadow-[0_18px_40px_rgba(34,211,238,0.45)]"
+                                    >
+                                        <Download className="h-4 w-4" />
+                                        {downloading ? "Generating PNG..." : "Download PNG"}
+                                    </Button>
+                                </div>
                             </div>
                         </div>
 
-                        <Button
-                            onClick={handleDownloadCard}
-                            disabled={downloading}
-                            className="flex w-full items-center justify-center gap-2 rounded-2xl border border-white/20 bg-white/10 py-6 text-base font-medium text-white transition hover:border-cyan-300/40 hover:bg-white/15 hover:shadow-[0_0_30px_-10px_rgba(34,211,238,0.2)]"
-                        >
-                            <Download className="h-4 w-4" />
-                            {downloading ? "Generating card..." : "Download projection card"}
-                        </Button>
 
-                        <Button
-                            asChild
-                            variant="outline"
-                            className="flex w-full items-center justify-center gap-2 rounded-2xl border-white/20 bg-white/5 py-5 text-base font-medium text-cyan-100 transition hover:border-cyan-300/40 hover:text-white"
-                        >
-                            <a href="https://backpack.exchange/join/ardra" target="_blank" rel="noreferrer">
-                                Start on Backpack
-                                <ArrowRight className="h-4 w-4" />
-                            </a>
-                        </Button>
                     </div>
                 </section>
 
