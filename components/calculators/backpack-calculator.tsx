@@ -164,8 +164,8 @@ export function BackpackCalculator() {
                             Reset sample
                         </Button>
                         <Button asChild className="bg-gradient-to-r from-cyan-400 to-emerald-400 text-black hover:from-cyan-300 hover:to-emerald-300">
-                            <a href="https://backpack.exchange/stats" target="_blank" rel="noreferrer">
-                                View Backpack stats
+                            <a href="https://backpack.exchange/join/ardra" target="_blank" rel="noreferrer">
+                                Sign up on Backpack + Earn Ardra Points
                                 <ArrowRight className="ml-2 h-4 w-4" />
                             </a>
                         </Button>
@@ -249,7 +249,7 @@ export function BackpackCalculator() {
 
                                 {/* Formula */}
                                 <div className="text-xs text-white/50">
-                                    Formula: FDV × {values.allocation}% × (My Points / {new Intl.NumberFormat("en-US").format(TOTAL_SEASON_POINTS)} total)
+                                    Formula: FDV × {values.allocation}% allocation × (My Points / {new Intl.NumberFormat("en-US").format(TOTAL_SEASON_POINTS)} total)
                                 </div>
 
                                 {/* Credit */}
