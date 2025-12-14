@@ -346,6 +346,16 @@ export function AsterCalculator() {
                     </div>
                 </section>
 
+                {/* Aster signup button */}
+                <div className="flex justify-center">
+                    <Button asChild className="w-full bg-gradient-to-r from-cyan-400 to-emerald-400 text-black hover:from-cyan-300 hover:to-emerald-300">
+                        <a href="https://www.asterdex.com/en/referral/c67143" target="_blank" rel="noreferrer">
+                            Sign up on Aster + Earn Ardra Points
+                            <ArrowRight className="ml-2 h-4 w-4" />
+                        </a>
+                    </Button>
+                </div>
+
                 {/* Assumptions section */}
                 <div className="space-y-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-5 text-sm text-white/75">
                     <div className="flex items-center gap-2">
