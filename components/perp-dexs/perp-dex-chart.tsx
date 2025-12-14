@@ -2,7 +2,7 @@
 "use client"
 
 import type { PerpDexData } from "@/lib/api/perp-dex-data"
-import { useEffect, useMemo, useState, useId } from "react"
+import { useEffect, useMemo, useState, useId, useRef } from "react"
 import {
     Bar,
     BarChart,
@@ -15,6 +15,8 @@ import {
     Cell,
     LabelList
 } from "recharts"
+import { Download } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import { METRIC_CONFIG, PerpMetricMode } from "./metric-config"
 
 type Props = {
@@ -55,11 +57,96 @@ function CursorHighlight({ x = 0, y = 0, width = 0, height = 0, gradientId }: Cu
 
 export function PerpDexChart({ data, metric }: Props) {
     const [isClient, setIsClient] = useState(false)
+    const [downloading, setDownloading] = useState(false)
     const cursorGradientId = useId().replace(/:/g, "-")
+    const chartRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
         setIsClient(true)
     }, [])
+
+    const handleDownloadChart = async () => {
+        if (!chartRef.current || downloading) return
+        setDownloading(true)
+
+        try {
+            // Preload all external images as base64 via proxy
+            const originalImages = chartRef.current.querySelectorAll("image")
+            const imageMap = new Map<string, string>()
+
+            await Promise.all(
+                Array.from(originalImages).map(async (img) => {
+                    const href = img.getAttribute("href") || img.getAttributeNS("http://www.w3.org/1999/xlink", "href")
+                    if (href && href.startsWith("http") && !imageMap.has(href)) {
+                        try {
+                            const response = await fetch(`/api/image-proxy?url=${encodeURIComponent(href)}`)
+                            if (response.ok) {
+                                const blob = await response.blob()
+                                const base64 = await new Promise<string>((resolve) => {
+                                    const reader = new FileReader()
+                                    reader.onloadend = () => resolve(reader.result as string)
+                                    reader.readAsDataURL(blob)
+                                })
+                                imageMap.set(href, base64)
+                            }
+                        } catch {
+                            // Skip failed images
+                        }
+                    }
+                })
+            )
+
+            // Clone the chart off-screen (original stays intact)
+            const clone = chartRef.current.cloneNode(true) as HTMLDivElement
+            clone.style.position = "fixed"
+            clone.style.left = "-9999px"
+            clone.style.top = "0"
+            clone.style.width = `${chartRef.current.offsetWidth}px`
+            clone.style.height = `${chartRef.current.offsetHeight}px`
+            clone.style.zIndex = "-1"
+            document.body.appendChild(clone)
+
+            // Replace external images in clone with base64 versions
+            const cloneImages = clone.querySelectorAll("image")
+            cloneImages.forEach((img) => {
+                const href = img.getAttribute("href") || img.getAttributeNS("http://www.w3.org/1999/xlink", "href")
+                if (href && imageMap.has(href)) {
+                    const base64 = imageMap.get(href)!
+                    img.setAttribute("href", base64)
+                    img.setAttributeNS("http://www.w3.org/1999/xlink", "href", base64)
+                }
+            })
+
+            // Remove download button from clone
+            const cloneBtn = clone.querySelector("[data-html2canvas-ignore]")
+            if (cloneBtn) cloneBtn.remove()
+
+            // Wait for clone to render
+            await new Promise(resolve => setTimeout(resolve, 100))
+
+            const domtoimage = await import("dom-to-image-more")
+            const dataUrl = await domtoimage.toPng(clone, {
+                bgcolor: "#05040f",
+                quality: 1,
+                scale: 2
+            })
+
+            // Remove clone
+            document.body.removeChild(clone)
+
+            const link = document.createElement("a")
+            link.download = `ardra-perp-${metric}-${Date.now()}.png`
+            link.href = dataUrl
+            link.click()
+        } catch (error) {
+            console.error("Failed to export chart", error)
+            // Clean up clone if exists
+            const clone = document.querySelector("[style*='-9999px']")
+            if (clone) clone.remove()
+        } finally {
+            setDownloading(false)
+        }
+    }
 
     const preset = METRIC_CONFIG[metric]
     const gradientColors = ["#22d3ee", "#39b5f2", "#6d83f5", "#a855f7", "#ec4899", "#f97316", "#facc15", "#34d399", "#14b8a6", "#0ea5e9"]
@@ -139,11 +226,23 @@ export function PerpDexChart({ data, metric }: Props) {
     }
 
     return (
-        <div className="relative h-[420px] w-full overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 via-white/5 to-cyan-500/5 p-4 backdrop-blur-xl shadow-2xl shadow-cyan-500/10">
+        <div ref={chartRef} className="relative h-[420px] w-full overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 via-white/5 to-cyan-500/5 p-4 backdrop-blur-xl shadow-2xl shadow-cyan-500/10">
             <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_20%_20%,rgba(34,211,238,0.08),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(147,51,234,0.08),transparent_30%)]" />
-            <h3 className="relative mb-4 text-lg font-medium text-white">{preset.label}</h3>
+            <div className="relative mb-4 flex items-center justify-between">
+                <h3 className="whitespace-nowrap text-lg font-medium text-white">{preset.label}</h3>
+                <Button
+                    data-html2canvas-ignore="true"
+                    onClick={handleDownloadChart}
+                    disabled={downloading}
+                    size="sm"
+                    className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400 px-3 py-1.5 text-xs font-semibold text-black shadow-[0_8px_20px_rgba(34,211,238,0.25)] transition-all hover:from-cyan-300 hover:via-sky-300 hover:to-emerald-300"
+                >
+                    <Download className="h-3.5 w-3.5" />
+                    {downloading ? "Generating..." : "Download PNG"}
+                </Button>
+            </div>
             <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData}>
+                <BarChart data={chartData} margin={{ top: 25, right: 5, bottom: 5, left: 5 }}>
                     <defs>
                         <linearGradient id={cursorGradientId} x1="0" y1="0" x2="0" y2="1">
                             <stop offset="0%" stopColor="rgba(255,255,255,0.18)" />
